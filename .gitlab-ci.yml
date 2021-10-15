@@ -1,0 +1,135 @@
+variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+  GIT_STRATEGY: clone
+  APP_NAME: zeno-habit
+
+stages:
+  - build
+  - test
+  - package
+  - deploy
+
+build web:
+  stage: build
+  image: node:alpine
+  script:
+    - cd zeno-habit-web
+    - npm ci
+    - npm run build
+    - npm run test:ci
+  artifacts:
+      when: always
+      reports:
+        cobertura:
+          - ./zeno-habit-web/coverage/cobertura-coverage.xml
+        junit:
+          - ./zeno-habit-web/junit.xml
+
+build bff:
+  stage: build
+  image: node:alpine
+  script:
+    - cd zeno-habit-bff
+    - npm ci
+    - npm run build
+    - npm run test:ci
+  artifacts:
+      when: always
+      reports:
+        cobertura:
+          - ./zeno-habit-bff/coverage/cobertura-coverage.xml
+        junit:
+          - ./zeno-habit-bff/junit.xml
+
+build api:
+  stage: build
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  script:
+    - cd zeno-habit-api
+    - dotnet restore
+    - dotnet test --test-adapter-path:. --collect:"XPlat Code Coverage" --results-directory:"artifacts" --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+  artifacts:
+    when: always
+    reports:
+      cobertura:
+       - ./zeno-habit-api/artifacts/*/coverage.cobertura.xml
+      junit: 
+       - ./**/*test-result.xml
+
+end to end tests:
+  stage: test
+  image: docker/compose
+  services:
+    - docker:dind
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  before_script:
+    - apk add --update npm
+  script:
+    - docker-compose --version
+    - docker-compose build --parallel
+    - docker-compose up --detach
+    - npm --prefix zeno-habit-e2e ci
+    - npm --prefix zeno-habit-e2e run test:ci
+  after_script:
+    - docker-compose down
+  artifacts:
+      when: always
+      reports:
+        junit:
+          - ./zeno-habit-e2e/junit.xml
+
+publish web:
+  stage: package
+  image: docker:stable
+  services:
+    - docker:dind
+  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
+    - docker build -t "$CR_USERNAME"/zeno-habit-web ./zeno-habit-web
+    - docker push "$CR_USERNAME"/zeno-habit-web
+
+publish bff:
+  stage: package
+  image: docker:stable
+  services:
+    - docker:dind
+  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
+    - docker build -t "$CR_USERNAME"/zeno-habit-bff ./zeno-habit-bff
+    - docker push "$CR_USERNAME"/zeno-habit-bff
+
+publish api:
+  stage: package
+  image: docker:stable
+  services:
+    - docker:dind
+  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
+    - docker build -t "$CR_USERNAME"/zeno-habit-api ./zeno-habit-api
+    - docker push "$CR_USERNAME"/zeno-habit-api
+
+deploy to production:
+  stage: deploy
+  image:
+    name: alpine/helm:3.2.1
+    entrypoint: [""] 
+  needs: [ "publish web", "publish bff", "publish api" ]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  script:
+    - helm version
+    - helm upgrade ${APP_NAME} ./charts --install --atomic --values="$HELM_VALUES" --namespace ${APP_NAME} --kubeconfig "$KUBE_CONFIG"
+  environment:
+    name: "$ENV_NAME"
+    url: "$ENV_ADDRESS"

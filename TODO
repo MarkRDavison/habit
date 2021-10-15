@@ -1,0 +1,3 @@
+Add example tests hitting the docker compose containers
+Add code coverage to output and make tests fail if threshold not met
+cypress tests
