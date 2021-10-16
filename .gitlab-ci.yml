@@ -1,7 +1,7 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://docker:2376
+  DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_VERIFY: 0
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
@@ -63,7 +63,7 @@ end to end tests:
   stage: test
   image: docker
   services:
-    - docker:19.03.0-dind
+    - docker:19.03.12-dind
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
@@ -99,7 +99,7 @@ publish web:
   stage: package
   image: docker:18.09
   services:
-    - name: docker:19.03.13-dind
+    - name: docker:19.03.12-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -112,7 +112,7 @@ publish bff:
   stage: package
   image: docker:18.09
   services:
-    - name: docker:19.03.13-dind
+    - name: docker:19.03.12-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -125,7 +125,7 @@ publish api:
   stage: package
   image: docker:18.09
   services:
-    - name: docker:19.03.13-dind
+    - name: docker:19.03.12-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
