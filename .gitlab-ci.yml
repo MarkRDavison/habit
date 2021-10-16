@@ -61,7 +61,7 @@ end to end tests:
   stage: test
   image: docker
   services:
-    - name: docker:19.03.13-dind
+    - docker:dind
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
