@@ -1,7 +1,6 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://localhost:2375
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -95,7 +94,7 @@ end to end tests:
 
 publish web:
   stage: package
-  image: docker:stable
+  image: docker:18.09
   services:
     - name: docker:18.09-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
@@ -108,7 +107,7 @@ publish web:
 
 publish bff:
   stage: package
-  image: docker:stable
+  image: docker:18.09
   services:
     - name: docker:18.09-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
@@ -121,7 +120,7 @@ publish bff:
 
 publish api:
   stage: package
-  image: docker:stable
+  image: docker:18.09
   services:
     - name: docker:18.09-dind
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
