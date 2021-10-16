@@ -1,6 +1,7 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: tcp://docker:2375
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -61,7 +62,7 @@ end to end tests:
   stage: test
   image: docker
   services:
-    - docker:dind
+    - docker:19.03.0-dind
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
