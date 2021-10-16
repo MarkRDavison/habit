@@ -3,6 +3,8 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
+  DOCKER_HOST: tcp://localhost:2375/
+
 
 stages:
   - build
