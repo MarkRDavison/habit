@@ -60,9 +60,7 @@ build api:
 
 end to end tests:
   stage: test
-  image: docker:19.03.12
-  services:
-    - docker:19.03.12-dind
+  image: docker:19.03.12-dind
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
