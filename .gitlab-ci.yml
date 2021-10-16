@@ -1,7 +1,7 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://docker:2375
+  DOCKER_HOST: tcp://localhost:2375
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -66,12 +66,11 @@ end to end tests:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
-    - export DOCKER_HOST=tcp://docker:2375
     - apk add --update npm
   script:
     - echo "Waiting for docker cli to respond before continuing build..."
     - |
-      for i in $(seq 1 30); do
+      for i in $(seq 1 10); do
           if ! docker info &> /dev/null; then
               echo "Docker not responding yet. Sleeping for 1s..." && sleep 1s
           else
