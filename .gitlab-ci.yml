@@ -63,6 +63,7 @@ end to end tests:
   image: docker/compose
   services:
     - name: docker:20-dind
+      alias: docker
       command: ["--tls=false"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -88,6 +89,7 @@ publish web:
   image: docker:stable
   services:
     - name: docker:20-dind
+      alias: docker
       command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
@@ -102,6 +104,7 @@ publish bff:
   image: docker:stable
   services:
     - name: docker:20-dind
+      alias: docker
       command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
@@ -116,6 +119,7 @@ publish api:
   image: docker:stable
   services:
     - name: docker:20-dind
+      alias: docker
       command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
