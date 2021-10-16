@@ -3,8 +3,6 @@ variables:
   DOCKER_TLS_CERTDIR: ""
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
-  DOCKER_HOST: tcp://localhost:2375/
-
 
 stages:
   - build
@@ -69,6 +67,7 @@ end to end tests:
   before_script:
     - apk add --update npm
   script:
+    - docker --version
     - docker-compose --version
     - docker-compose build --parallel
     - docker-compose up --detach
