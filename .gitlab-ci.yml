@@ -2,7 +2,6 @@ variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
   DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_VERIFY: 0
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -74,7 +73,7 @@ end to end tests:
     - |
       for i in $(seq 1 30); do
           if ! docker info &> /dev/null; then
-              echo "Docker not responding yet. Sleeping for 2s..." && sleep 2s
+              echo "Docker not responding yet. Sleeping for 1s..." && sleep 1s
           else
               echo "Docker ready. Continuing build..."
               break
