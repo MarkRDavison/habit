@@ -1,6 +1,7 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_HOST: host.docker.internal
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
