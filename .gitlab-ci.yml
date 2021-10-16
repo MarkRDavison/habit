@@ -1,7 +1,6 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://docker:2375
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -63,8 +62,6 @@ end to end tests:
   image: docker/compose
   services:
     - name: docker:dind
-      alias: docker
-      command: ["--tls=false"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
@@ -99,8 +96,6 @@ publish web:
   image: docker:stable
   services:
     - name: docker:dind
-      alias: docker
-      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -114,8 +109,6 @@ publish bff:
   image: docker:stable
   services:
     - name: docker:dind
-      alias: docker
-      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -129,8 +122,6 @@ publish api:
   image: docker:stable
   services:
     - name: docker:dind
-      alias: docker
-      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
