@@ -69,6 +69,16 @@ end to end tests:
     - apk add --update npm
   script:
     - echo "Waiting for docker cli to respond before continuing build..."
+    - |
+      for i in $(seq 1 30); do
+          if ! docker info &> /dev/null; then
+              echo "Docker not responding yet. Sleeping for 2s..." && sleep 2s
+          else
+              echo "Docker ready. Continuing build..."
+              break
+          fi
+      done
+    - docker info
     - docker --version
     - docker-compose --version
     - docker-compose build --parallel
