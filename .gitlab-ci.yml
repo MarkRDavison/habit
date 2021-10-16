@@ -60,7 +60,7 @@ build api:
 
 end to end tests:
   stage: test
-  image: docker/compose
+  image: docker
   services:
     - name: docker:19.03.13-dind
   rules:
