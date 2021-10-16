@@ -61,7 +61,8 @@ end to end tests:
   stage: test
   image: docker/compose
   services:
-    - docker:dind
+    - name: docker:dind
+      command: ["--tls=false"]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   before_script:
@@ -85,7 +86,8 @@ publish web:
   stage: package
   image: docker:stable
   services:
-    - docker:dind
+    - name: docker:dind
+      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -98,7 +100,8 @@ publish bff:
   stage: package
   image: docker:stable
   services:
-    - docker:dind
+    - name: docker:dind
+      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -111,7 +114,8 @@ publish api:
   stage: package
   image: docker:stable
   services:
-    - docker:dind
+    - name: docker:dind
+      command: ["--tls=false"]
   needs: [ "build web", "build bff", "build api", "end to end tests" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
