@@ -89,8 +89,8 @@ build kaniko web:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web
+    - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context ./zeno-habit-web/ --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web
 
 publish web:
   stage: package
