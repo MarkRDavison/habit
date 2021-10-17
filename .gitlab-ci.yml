@@ -91,6 +91,8 @@ publish web:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
+    - journalctl -fu docker
+    - systemctl status docker
     - docker build -t "$CR_USERNAME"/zeno-habit-web ./zeno-habit-web
     - docker push "$CR_USERNAME"/zeno-habit-web
 
