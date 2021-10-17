@@ -84,9 +84,9 @@ build api:
 
 publish web:
   stage: package
-  image: docker:18.09
+  image: docker
   services:
-    - name: docker:19.03.12-dind
+    - name: docker:dind
   needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -97,9 +97,9 @@ publish web:
 
 publish bff:
   stage: package
-  image: docker:18.09
+  image: docker
   services:
-    - name: docker:19.03.12-dind
+    - name: docker:dind
   needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -110,9 +110,9 @@ publish bff:
 
 publish api:
   stage: package
-  image: docker:18.09
+  image: docker
   services:
-    - name: docker:19.03.12-dind
+    - name: docker:dind
   needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
