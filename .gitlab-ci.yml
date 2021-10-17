@@ -90,7 +90,6 @@ publish web:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
-    - export DOCKER_HOST="tcp://docker:2375"
     - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
     - docker build -t "$CR_USERNAME"/zeno-habit-web ./zeno-habit-web
     - docker push "$CR_USERNAME"/zeno-habit-web
