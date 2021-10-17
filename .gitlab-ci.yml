@@ -1,7 +1,6 @@
 variables:
   DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
-  DOCKER_HOST: tcp://localhost:2375
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
 
@@ -55,48 +54,40 @@ build api:
     reports:
       cobertura:
        - ./zeno-habit-api/artifacts/*/coverage.cobertura.xml
-      junit: 
+      junit:
        - ./**/*test-result.xml
 
-end to end tests:
-  stage: test
-  image: docker:19.03.12-dind
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  before_script:
-    - apk add --update npm
-  script:
-    - echo "Waiting for docker cli to respond before continuing build..."
-    - |
-      for i in $(seq 1 10); do
-          if ! docker info &> /dev/null; then
-              echo "Docker not responding yet. Sleeping for 1s..." && sleep 1s
-          else
-              echo "Docker ready. Continuing build..."
-              break
-          fi
-      done
-    - docker info
-    - docker --version
-    - docker-compose --version
-    - docker-compose build --parallel
-    - docker-compose up --detach
-    - npm --prefix zeno-habit-e2e ci
-    - npm --prefix zeno-habit-e2e run test:ci
-  after_script:
-    - docker-compose down
-  artifacts:
-      when: always
-      reports:
-        junit:
-          - ./zeno-habit-e2e/junit.xml
+# end to end tests:
+#   stage: test
+#   image: docker:19.03.12
+#   services:
+#     - docker:19.03.12-dind
+#   rules:
+#     - if: '$CI_COMMIT_BRANCH == "main"'
+#   before_script:
+#     - apk add --update npm
+#   script:
+#     - docker info
+#     - docker --version
+#     - docker-compose --version
+#     - docker-compose build --parallel
+#     - docker-compose up --detach
+#     - npm --prefix zeno-habit-e2e ci
+#     - npm --prefix zeno-habit-e2e run test:ci
+#   after_script:
+#     - docker-compose down
+#   artifacts:
+#       when: always
+#       reports:
+#         junit:
+#           - ./zeno-habit-e2e/junit.xml
 
 publish web:
   stage: package
   image: docker:18.09
   services:
     - name: docker:19.03.12-dind
-  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
@@ -109,7 +100,7 @@ publish bff:
   image: docker:18.09
   services:
     - name: docker:19.03.12-dind
-  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
@@ -122,7 +113,7 @@ publish api:
   image: docker:18.09
   services:
     - name: docker:19.03.12-dind
-  needs: [ "build web", "build bff", "build api", "end to end tests" ]
+  needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
@@ -134,7 +125,7 @@ deploy to production:
   stage: deploy
   image:
     name: alpine/helm:3.2.1
-    entrypoint: [""] 
+    entrypoint: [""]
   needs: [ "publish web", "publish bff", "publish api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
