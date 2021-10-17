@@ -80,32 +80,19 @@ build api:
 #       reports:
 #         junit:
 #           - ./zeno-habit-e2e/junit.xml
-build kaniko web:
+
+publish web:
   stage: package
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
+  needs: [ "build web", "build bff", "build api" ]
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context ./zeno-habit-web/ --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web
-
-publish web:
-  stage: package
-  image: docker
-  services:
-    - name: docker:dind
-  needs: [ "build web", "build bff", "build api" ]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-  script:
-    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
-    - journalctl -fu docker
-    - systemctl status docker
-    - docker build -t "$CR_USERNAME"/zeno-habit-web ./zeno-habit-web
-    - docker push "$CR_USERNAME"/zeno-habit-web
 
 publish bff:
   stage: package
@@ -116,9 +103,9 @@ publish bff:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
-    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
-    - docker build -t "$CR_USERNAME"/zeno-habit-bff ./zeno-habit-bff
-    - docker push "$CR_USERNAME"/zeno-habit-bff
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context ./zeno-habit-bff/ --dockerfile ./zeno-habit-bff/Dockerfile --destination "$CR_USERNAME"/zeno-habit-bff
 
 publish api:
   stage: package
@@ -129,9 +116,9 @@ publish api:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
-    - docker login -u "$CR_USERNAME" -p "$CR_PASSWORD"
-    - docker build -t "$CR_USERNAME"/zeno-habit-api ./zeno-habit-api
-    - docker push "$CR_USERNAME"/zeno-habit-api
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context ./zeno-habit-api/ --dockerfile ./zeno-habit-api/Dockerfile --destination "$CR_USERNAME"/zeno-habit-api
 
 deploy to production:
   stage: deploy
