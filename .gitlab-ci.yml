@@ -130,7 +130,7 @@ deploy to production:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
     - helm version
-    - helm upgrade ${APP_NAME} ./charts --install --atomic --values="$HELM_VALUES" --namespace ${APP_NAME} --kubeconfig "$KUBE_CONFIG"
+    - helm upgrade ${APP_NAME} ./charts --install --atomic --namespace ${APP_NAME} --kubeconfig "$KUBE_CONFIG"
   environment:
     name: "$ENV_NAME"
     url: "$ENV_ADDRESS"

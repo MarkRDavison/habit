@@ -1,0 +1,59 @@
+tls: {
+  secretName: wildcard-markdavison-kiwi,
+  enabled: true
+}
+
+api: {
+  app: zeno-habit-api,
+  replicas: 1,
+  name: zeno-habit-api,
+  image: zeno15/zeno-habit-api,
+  port: 50000,
+  ingress: {
+    host: habit-api.markdavison.kiwi
+  },
+  env: {
+    secret: [
+    ],
+    public: {
+    }
+  }
+}
+
+bff: {
+  app: zeno-habit-bff,
+  replicas: 1,
+  name: zeno-habit-bff,
+  image: zeno15/zeno-habit-bff,
+  port: 40000,
+  ingress: {
+    host: habit-bff.markdavison.kiwi
+  },
+  env: {
+    secret: [
+    
+    ],
+    public: {
+      
+    }
+  }
+}
+
+web: {
+  app: zeno-habit-web,
+  replicas: 1,
+  name: zeno-habit-web,
+  image: zeno15/zeno-habit-web,
+  port: 30000,
+  ingress: {
+    host: habit-web.markdavison.kiwi
+  },
+  env: {
+    secret: [
+      
+    ],
+    public: {
+      
+    }
+  }
+}
