@@ -35,8 +35,10 @@
     "ts-node": "^10.2.1",
     "typescript": "^4.3.5"
   },
+  "peerDependencies": {
+    "@mark.davison/zeno-common": "^0.1.6"
+  },
   "dependencies": {
-    "@mark.davison/zeno-common": "^0.1.6",
     "@mark.davison/zeno-common-server": "^0.1.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1"

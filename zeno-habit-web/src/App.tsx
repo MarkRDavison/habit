@@ -19,25 +19,15 @@ interface FormData {
     password: string
 }
 
-
 const FormComponent = (props: FormProps<FormData>): JSX.Element => {
     return (
         <Form<FormData>
-            initialValues={props.initialData}
+            initialValues={props.initialValues}
             required={props.required}
-            validator={props.validate}
+            validator={props.validator}
             handleSubmit={props.handleSubmit}
             afterSubmit={props.afterSubmit}>
-            {(isSubmitting, invalidRequired) =>
-            <BaseForm>
-                <BaseInput type="text" name="username" disabled={isSubmitting} label="Username" />
-                <BaseErrorMessage name="username" />
-                <BaseInput type="password" name="password" disabled={isSubmitting} label="Password" />
-                <BaseErrorMessage name="password" />
-                <BaseInput type="submit" name="submit" label="Login" disabled={isSubmitting || invalidRequired}/>
-                {invalidRequired ? <div data-testid='invalid-required-div' /> : <div/> }
-            </BaseForm>
-            }
+            {props.children}
         </Form>
     );
 };
@@ -53,8 +43,8 @@ const App = (): JSX.Element => {
     };
 
     const props: FormProps<FormData> = {
-        initialData: initialData,
-        validate: (values: FormData, touched: Touched<FormData>, required: Touched<FormData>, reason: FormValidationReason): ValidationResult<FormData> => {
+        initialValues: initialData,
+        validator: (values: FormData, touched: Touched<FormData>, required: Touched<FormData>, reason: FormValidationReason): ValidationResult<FormData> => {
             return {
                 errors: {
                     username: undefined,
@@ -70,7 +60,17 @@ const App = (): JSX.Element => {
         },
         afterSubmit: (success: boolean) => {
             logger.debug(`AfterSubmit: ${success}`)
-        }
+        },
+        children: (isSubmitting, invalidRequired) =>
+        <BaseForm>
+            <BaseInput type="text" name="username" disabled={isSubmitting} label="Username" />
+            <BaseErrorMessage name="username" />
+            <BaseInput type="password" name="password" disabled={isSubmitting} label="Password" />
+            <BaseErrorMessage name="password" />
+            <BaseInput type="submit" name="submit" label="Login" disabled={isSubmitting || invalidRequired}/>
+            {invalidRequired ? <div data-testid='invalid-required-div' /> : <div/> }
+        </BaseForm>
+            
     }
 
     return (
