@@ -1,5 +1,6 @@
 import express, { Application, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
+import { logger } from '@mark.davison/zeno-common'
 
 dotenv.config();
 
@@ -13,4 +14,4 @@ app.use('/', (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Start server
-app.listen(port, () => console.log(`Server is listening on port ${port}!`));
+app.listen(port, () => logger.debug(`Server is listening on port ${port}!`));
