@@ -175,11 +175,11 @@ deploy to production:
     name: alpine/helm:3.2.1
     entrypoint: [""]
   needs:
-    - job: "build web"
+    - job: "publish web"
       optional: true
-    - job: "build bff"
+    - job: "publish bff"
       optional: true
-    - job: "build api"
+    - job: "publish api"
       optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
