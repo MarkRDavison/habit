@@ -14,8 +14,8 @@ build web:
   image: node:alpine
   script:
     - cd zeno-habit-web
-    - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/projects/${CI_PROJECT_ID}/packages/npm/' >> .npmrc
-    - npm config set //gitlab.markdavison.kiwi/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}
+    - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/packages/npm/' >> .npmrc
+    - npm config set //gitlab.markdavison.kiwi/api/v4/packages/npm/:_authToken=${CI_JOB_TOKEN}
     - npm ci
     - npm run build
     - npm run test:ci
@@ -32,8 +32,8 @@ build bff:
   image: node:alpine
   script:
     - cd zeno-habit-bff
-    - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/projects/${CI_PROJECT_ID}/packages/npm/' >> .npmrc
-    - npm config set //gitlab.markdavison.kiwi/api/v4/projects/${CI_PROJECT_ID}/packages/npm/:_authToken=${CI_JOB_TOKEN}
+    - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/packages/npm/' >> .npmrc
+    - npm config set //gitlab.markdavison.kiwi/api/v4/packages/npm/:_authToken=${CI_JOB_TOKEN}
     - npm ci
     - npm run build
     - npm run test:ci
