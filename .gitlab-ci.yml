@@ -12,6 +12,11 @@ stages:
 build web:
   stage: build
   image: node:alpine
+  rules:
+    - changes:
+      - zeno-habit-web/**/*
+      when: always
+    - when: never
   script:
     - cd zeno-habit-web
     - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/packages/npm/' >> .npmrc
@@ -30,6 +35,11 @@ build web:
 build bff:
   stage: build
   image: node:alpine
+  rules:
+    - changes:
+      - zeno-habit-bff/**/*
+      when: always
+    - when: never
   script:
     - cd zeno-habit-bff
     - echo '@mark.davison:registry=https://gitlab.markdavison.kiwi/api/v4/packages/npm/' >> .npmrc
@@ -48,6 +58,11 @@ build bff:
 build api:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:5.0
+  rules:
+    - changes:
+      - zeno-habit-api/**/*
+      when: always
+    - when: never
   script:
     - cd zeno-habit-api
     - dotnet restore
@@ -90,9 +105,19 @@ publish web:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  needs: [ "build web" ]
+  needs:
+    - job: "build web"
+      optional: true
+    - job: "build bff"
+      optional: true
+    - job: "build api"
+      optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+      - zeno-habit-web/**/*
+      when: always
+    - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -103,9 +128,19 @@ publish bff:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  needs: [ "build bff" ]
+  needs:
+    - job: "build web"
+      optional: true
+    - job: "build bff"
+      optional: true
+    - job: "build api"
+      optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+      - zeno-habit-bff/**/*
+      when: always
+    - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -116,9 +151,19 @@ publish api:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  needs: [ "build api" ]
+  needs:
+    - job: "build web"
+      optional: true
+    - job: "build bff"
+      optional: true
+    - job: "build api"
+      optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
+      changes:
+      - zeno-habit-api/**/*
+      when: always
+    - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -129,7 +174,13 @@ deploy to production:
   image:
     name: alpine/helm:3.2.1
     entrypoint: [""]
-  needs: [ "publish web", "publish bff", "publish api" ]
+  needs:
+    - job: "build web"
+      optional: true
+    - job: "build bff"
+      optional: true
+    - job: "build api"
+      optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
   script:
