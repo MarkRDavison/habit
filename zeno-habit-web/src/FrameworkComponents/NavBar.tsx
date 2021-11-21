@@ -37,8 +37,6 @@ const _NavBar = (props: Props): JSX.Element => {
       handleClose();
     };
 
-    console.log(isLoggedIn)
-
     return (
         <div>            
             <AppBar position="static">                

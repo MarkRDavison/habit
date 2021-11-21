@@ -5,6 +5,6 @@ import App from '../src/App';
 
 test('App has text', (): void => {
     render(<App />);
-    const linkElement = screen.getByText(/Username/i);
+    const linkElement = screen.getByText(/Zeno Habit/i);
     expect(linkElement).toBeInTheDocument();
 });
