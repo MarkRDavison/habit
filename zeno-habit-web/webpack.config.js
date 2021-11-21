@@ -72,7 +72,8 @@ module.exports = {
         extensions: ['.ts', '.js', '.json', ".tsx"]
     },
     output: {
-        filename: "bundle.js"
+        filename: "bundle.js",
+        hashFunction: "xxhash64" // ERR_OSSL_EVP_UNSUPPORTED
     },
 
     plugins: [new HtmlWebpackPlugin({
