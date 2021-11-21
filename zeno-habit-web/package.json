@@ -7,7 +7,7 @@
     "test:watch": "jest --runInBand --watchAll",
     "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit",
     "tsc": "tsc",
-    "build": "webpack --openssl-legacy-provider",
+    "build": "webpack",
     "start:dev": "webpack-dev-server",
     "serve": "serve -s dist/ -p 30000",
     "start:served": "npm run build && node server.mjs",
