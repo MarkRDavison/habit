@@ -18,6 +18,7 @@ WORKDIR /usr/src/app
 
 COPY --from=BUILD_IMAGE /usr/src/app/dist ./dist
 COPY --from=BUILD_IMAGE /usr/src/app/package.json .
+COPY --from=BUILD_IMAGE /usr/src/app/server.mjs .
 COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
 
 CMD ["npm", "run", "serve:served"]
