@@ -31,10 +31,26 @@ bff: {
   },
   env: {
     secret: [
-    
+      'REDIS_PASSWORD',
+      'BFF_CLIENT_SECRET',
+      'API_CLIENT_SECRET',
+      'SESSION_SECRET'
     ],
     public: {
-      
+      PORT: '40000',
+      AUTH_ROOT: 'https://auth.markdavison.kiwi/auth',
+      BFF_REALM: 'markdavison.kiwi',
+      API_REALM: 'markdavison.kiwi',
+      NODE_ENV: 'prod',
+      REDIS_PORT: '6379',
+      BFF_ROOT: 'https://habit-bff.markdavison.kiwi',
+      SESSION_NAME: 'zeno-habit-dev-session',
+      WEB_ORIGIN: 'https://habit-web.markdavison.kiwi',
+      REDIS_HOST: 'redis.markdavison.kiwi',
+      BFF_CLIENT_ID: 'zeno-habit',
+      API_CLIENT_ID: 'zeno-habit-api',
+      API_ROOT: 'https://habit-api.markdavison.kiwi',
+      API_ROUTE: '/api'
     }
   }
 }
@@ -53,7 +69,8 @@ web: {
       
     ],
     public: {
-      
+      WEB_PORT: '30000',
+      ZENO_HABIT_BFF_BASE_URI: 'https://habit-bff.markdavison.kiwi'
     }
   }
 }
