@@ -10,4 +10,4 @@ spec:
     targetPort: {{ .Values.bff.port }}
     protocol: TCP
   selector:
-    app: {{ .Values.bff.app }}ass
+    app: {{ .Values.bff.app }}
