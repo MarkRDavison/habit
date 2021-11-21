@@ -1,17 +1,15 @@
-import express, { Application, Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { logger } from '@mark.davison/zeno-common'
+import { createApp } from './app';
 
 dotenv.config();
 
-// Boot express
-const app: Application = express();
 const port = 40000;
 
-// Application routing
-app.use('/', (req: Request, res: Response, next: NextFunction) => {
-    res.status(200).send({ data: 'Hello', changed: false, ...process.env });
+createApp()
+.then(app => {
+    app.listen(port, () => logger.info(`Listening on Port ${port}`))
+})
+.catch(e => {
+    logger.error(e)
 });
-
-// Start server
-app.listen(port, () => logger.debug(`Server is listening on port ${port}!`));
