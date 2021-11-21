@@ -10,6 +10,8 @@ const authEndpoints: AuthEndpoints = {
     userEndpoint: config.ZENO_HABIT_BFF_BASE_URI + '/auth/user'
 }
 
+console.log(authEndpoints.userEndpoint);
+
 ReactDOM.render(
 <AuthContext
     {...authEndpoints}>

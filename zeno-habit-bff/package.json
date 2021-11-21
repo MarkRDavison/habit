@@ -42,7 +42,7 @@
     "@mark.davison/zeno-common": "^0.1.6"
   },
   "dependencies": {
-    "@mark.davison/zeno-common-server": "^0.1.14",
+    "@mark.davison/zeno-common-server": "^0.1.17",
     "axios": "^0.23.0",
     "connect-redis": "^6.0.0",
     "cors": "^2.8.5",

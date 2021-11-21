@@ -13,6 +13,9 @@ module.exports = {
     devtool: IS_DEV ? 'inline-source-map' : false,
     devtool: "source-map",
     entry: ['./src/index.tsx'],
+    devServer: {
+      historyApiFallback: true,
+    },
     module: {
         rules: [
             {
@@ -73,7 +76,8 @@ module.exports = {
     },
     output: {
         filename: "bundle.js",
-        hashFunction: "xxhash64" // ERR_OSSL_EVP_UNSUPPORTED
+        hashFunction: "xxhash64", // ERR_OSSL_EVP_UNSUPPORTED
+        publicPath: '/'
     },
 
     plugins: [new HtmlWebpackPlugin({

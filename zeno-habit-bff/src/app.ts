@@ -36,7 +36,7 @@ const useSessionMiddleware = (app: express.Application): void => {
 }
 
 const useApiProxyMiddleware = (app: express.Application): void => {
-
+    
 }
 
 export const createApp = async (): Promise<express.Application> => {
