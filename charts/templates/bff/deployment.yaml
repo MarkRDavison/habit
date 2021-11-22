@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: {{ .Values.bff.name }}
-        image: {{ .Values.bff.image }}
+        image: {{ .Values.bff.image }}:{{ .Values.bff.tag }}
         imagePullPolicy: Always
         ports:
         - containerPort: {{ .Values.bff.port }}
