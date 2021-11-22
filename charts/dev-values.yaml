@@ -11,7 +11,7 @@ api: {
   tag: latest,
   port: 50000,
   ingress: {
-    host: habit-api.markdavison.kiwi
+    host: habit-api-dev.markdavison.kiwi
   },
   env: {
     secret: [
@@ -29,7 +29,7 @@ bff: {
   tag: latest,
   port: 40000,
   ingress: {
-    host: habit-bff.markdavison.kiwi
+    host: habit-bff-dev.markdavison.kiwi
   },
   env: {
     secret: [
@@ -45,13 +45,13 @@ bff: {
       API_REALM: 'markdavison.kiwi',
       NODE_ENV: 'prod',
       REDIS_PORT: '6379',
-      BFF_ROOT: 'https://habit-bff.markdavison.kiwi',
-      SESSION_NAME: 'zeno-habit-prod-session',
-      WEB_ORIGIN: 'https://habit-web.markdavison.kiwi',
+      BFF_ROOT: 'https://habit-bff-dev.markdavison.kiwi',
+      SESSION_NAME: 'zeno-habit-dev-session',
+      WEB_ORIGIN: 'https://habit-web-dev.markdavison.kiwi',
       REDIS_HOST: 'redis.markdavison.kiwi',
       BFF_CLIENT_ID: 'zeno-habit',
       API_CLIENT_ID: 'zeno-habit-api',
-      API_ROOT: 'https://habit-api.markdavison.kiwi',
+      API_ROOT: 'https://habit-api-dev.markdavison.kiwi',
       API_ROUTE: '/api'
     }
   }
@@ -65,7 +65,7 @@ web: {
   tag: latest,
   port: 30000,
   ingress: {
-    host: habit-web.markdavison.kiwi
+    host: habit-web-dev.markdavison.kiwi
   },
   env: {
     secret: [
@@ -73,7 +73,7 @@ web: {
     ],
     public: {
       WEB_PORT: '30000',
-      ZENO_HABIT_BFF_BASE_URI: 'https://habit-bff.markdavison.kiwi'
+      ZENO_HABIT_BFF_BASE_URI: 'https://habit-bff-dev.markdavison.kiwi'
     }
   }
 }

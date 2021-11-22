@@ -1,12 +1,12 @@
 variables:
-  DOCKER_TLS_CERTDIR: ""
   GIT_STRATEGY: clone
   APP_NAME: zeno-habit
+  IMAGE_TAG: $CI_COMMIT_SHA
 
 stages:
   - build
-  - test
   - package
+  - test
   - deploy
 
 build web:
@@ -75,31 +75,6 @@ build api:
       junit:
        - ./**/*test-result.xml
 
-# end to end tests:
-#   stage: test
-#   image: docker:19.03.12
-#   services:
-#     - docker:19.03.12-dind
-#   rules:
-#     - if: '$CI_COMMIT_BRANCH == "main"'
-#   before_script:
-#     - apk add --update npm
-#   script:
-#     - docker info
-#     - docker --version
-#     - docker-compose --version
-#     - docker-compose build --parallel
-#     - docker-compose up --detach
-#     - npm --prefix zeno-habit-e2e ci
-#     - npm --prefix zeno-habit-e2e run test:ci
-#   after_script:
-#     - docker-compose down
-#   artifacts:
-#       when: always
-#       reports:
-#         junit:
-#           - ./zeno-habit-e2e/junit.xml
-
 publish web:
   stage: package
   image:
@@ -114,19 +89,22 @@ publish web:
       optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
+      variables:
+        IMAGE_TAG: "latest"
+    - changes:
       - zeno-habit-web/**/*
       when: always
     - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context ./zeno-habit-web/ --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web
+    - /kaniko/executor --context ./zeno-habit-web/ --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web:$IMAGE_TAG
+
 
 publish bff:
   stage: package
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: gcr.io/kaniko-project/executor:v1.7.0-debug
     entrypoint: [""]
   needs:
     - job: "build web"
@@ -137,19 +115,21 @@ publish bff:
       optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
+      variables:
+        IMAGE_TAG: "latest"
+    - changes:
       - zeno-habit-bff/**/*
       when: always
     - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context ./zeno-habit-bff/ --dockerfile ./zeno-habit-bff/Dockerfile --destination "$CR_USERNAME"/zeno-habit-bff
+    - /kaniko/executor --insecure --context ./zeno-habit-bff/ --dockerfile ./zeno-habit-bff/Dockerfile --destination zeno15/zeno-habit-bff:$IMAGE_TAG
 
 publish api:
   stage: package
   image:
-    name: gcr.io/kaniko-project/executor:debug
+    name: gcr.io/kaniko-project/executor:v1.7.0-debug
     entrypoint: [""]
   needs:
     - job: "build web"
@@ -160,14 +140,42 @@ publish api:
       optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
-      changes:
+      variables:
+        IMAGE_TAG: "latest"
+    - changes:
       - zeno-habit-api/**/*
       when: always
     - when: never
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context ./zeno-habit-api/ --dockerfile ./zeno-habit-api/Dockerfile --destination "$CR_USERNAME"/zeno-habit-api
+    - /kaniko/executor --insecure --context ./zeno-habit-api/ --dockerfile ./zeno-habit-api/Dockerfile --destination zeno15/zeno-habit-api:$IMAGE_TAG
+
+end to end tests:
+  stage: test
+  image:
+    name: dtzar/helm-kubectl
+    entrypoint: [""]
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        IMAGE_TAG: "latest"
+    - changes:
+      - zeno-habit-web/**/*
+      - zeno-habit-bff/**/*
+      - zeno-habit-api/**/*
+      - zeno-habit-e2e/**/*
+      - charts/**/*
+      when: always
+    - when: never
+  script:
+    - kubectl version 
+    - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - helm version
+    - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - sleep 60
+  after_script:
+    - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
 deploy to production:
   stage: deploy
@@ -180,6 +188,8 @@ deploy to production:
     - job: "publish bff"
       optional: true
     - job: "publish api"
+      optional: true
+    - job: "end to end tests"
       optional: true
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
