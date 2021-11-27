@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
       - name: zeno-habit-e2e
-        image: zeno15/zeno-habit-e2e
+        image: zeno15/zeno-habit-e2e:<E2E_IMAGE_TAG>
         imagePullPolicy: Always
         env:
         - name: CYPRESS_WEB_URL

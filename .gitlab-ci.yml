@@ -202,13 +202,16 @@ end to end tests:
   script:
     - echo "$IMAGE_TAG"
     - echo "TODO - Need to replace image tag in ./zeno-habit-e2e/e2e-dep.yaml"
+    - cat ./zeno-habit-e2e/e2e-dep.yaml
+    - sed -i 's\/<E2E_IMAGE_TAG>\/"$IMAGE_TAG"\/g' ./zeno-habit-e2e/e2e-dep.yaml
+    - cat ./zeno-habit-e2e/e2e-dep.yaml
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --timeout=600s --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl apply -f ./zeno-habit-e2e/e2e-dep.yaml -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready --timeout=600s pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl logs -f job/zeno-habit-e2e-job -n zeno-habit-dev --kubeconfig "$KUBE_CONFIG"
-    - kubectl wait --for=condition=Complete --timeout=600s job/zeno-habit-e2e-job -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - kubectl wait --for=condition=Complete --timeout=5s job/zeno-habit-e2e-job -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
   after_script:
     - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
