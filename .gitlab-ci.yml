@@ -156,6 +156,11 @@ end to end tests:
   image:
     name: dtzar/helm-kubectl
     entrypoint: [""]
+  artifacts:
+    expire_in: "1h"
+    paths:
+     - "zeno-habit-e2e/cypress/screenshots"
+     - "zeno-habit-e2e/cypress/videos"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
@@ -168,12 +173,18 @@ end to end tests:
       - charts/**/*
       when: always
     - when: never
+  before_script:
+    - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
   script:
     - kubectl version 
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm version
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - sleep 60
+    - sudo apt-get install npm
+    - sleep 20
+    - cd zeno-habit-e2e
+    - npm run test:e2ehl
+    - sleep 20
   after_script:
     - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
