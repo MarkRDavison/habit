@@ -203,7 +203,7 @@ end to end tests:
     - echo "$IMAGE_TAG"
     - echo "TODO - Need to replace image tag in ./zeno-habit-e2e/e2e-dep.yaml"
     - cat ./zeno-habit-e2e/e2e-dep.yaml
-    - sed -i 's/<E2E_IMAGE_TAG>/"$IMAGE_TAG"/g' ./zeno-habit-e2e/e2e-dep.yaml
+    - sed -i 's/<E2E_IMAGE_TAG>/${IMAGE_TAG}/g' ./zeno-habit-e2e/e2e-dep.yaml
     - cat ./zeno-habit-e2e/e2e-dep.yaml
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
