@@ -5,6 +5,7 @@ metadata:
   labels:
     app: zeno-habit-e2e
 spec:
+  restartPolicy: Never
   containers:
   - name: zeno-habit-e2e
     image: zeno15/zeno-habit-e2e
