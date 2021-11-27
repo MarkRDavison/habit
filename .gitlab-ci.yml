@@ -180,7 +180,7 @@ end to end tests:
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - apk add --update npm
+    - apk add --update npm libgtk2.0-0 libgtk-3-0 libgbm-dev libnotify-dev libgconf-2-4 libnss3 libxss1 libasound2 libxtst6 xauth xvfb
     - cd zeno-habit-e2e
     - npm ci
     - npm run test:e2ehl
