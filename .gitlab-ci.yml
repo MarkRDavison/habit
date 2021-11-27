@@ -206,6 +206,9 @@ end to end tests:
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - kubectl apply -f dep.yaml -n ${APP_NAME}-dev
+    - kubectl wait --for=condition=Complete --timeout=600s job/zeno-habit-e2e-job -n ${APP_NAME}-dev
+    - kubectl logs job/zeno-habit-e2e-job -n ${APP_NAME}-dev
   after_script:
     - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
