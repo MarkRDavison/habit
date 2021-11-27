@@ -151,11 +151,40 @@ publish api:
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --insecure --context ./zeno-habit-api/ --dockerfile ./zeno-habit-api/Dockerfile --destination zeno15/zeno-habit-api:$IMAGE_TAG
 
+publish e2e:
+  stage: package
+  image:
+    name: gcr.io/kaniko-project/executor:v1.7.0-debug
+    entrypoint: [""]
+  needs:
+    - job: "build web"
+      optional: true
+    - job: "build bff"
+      optional: true
+    - job: "build api"
+      optional: true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      variables:
+        IMAGE_TAG: "latest"
+    - changes:
+      - zeno-habit-e2e/**/*
+      - charts/**/*
+      when: always
+    - when: never
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --insecure --context ./zeno-habit-e2e/ --dockerfile ./zeno-habit-e2e/Dockerfile --destination zeno15/zeno-habit-e2e:$IMAGE_TAG
+
 end to end tests:
   stage: test
   image:
     name: dtzar/helm-kubectl
     entrypoint: [""]
+  needs:
+    - job: "publish e2e"
+      optional: true
   artifacts:
     expire_in: "1h"
     paths:
@@ -180,10 +209,6 @@ end to end tests:
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --insecure --context ./zeno-habit-e2e/ --dockerfile ./zeno-habit-e2e/Dockerfile --destination zeno15/zeno-habit-e2e:$IMAGE_TAG
-    
   after_script:
     - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
@@ -198,6 +223,8 @@ deploy to production:
     - job: "publish bff"
       optional: true
     - job: "publish api"
+      optional: true
+    - job: "publish e2e"
       optional: true
     - job: "end to end tests"
       optional: true

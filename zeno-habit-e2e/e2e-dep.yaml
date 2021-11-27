@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zeno-habit-e2e-dep
+  labels:
+    app: zeno-habit-e2e
+spec:
+  selector:
+    matchLabels:
+      app:  zeno-habit-e2e
+  template:
+    metadata:
+      labels:
+        app: zeno-habit-e2e
+        date: "{{ now | unixEpoch }}"
+    spec:
+      containers:
+      - name: zeno-habit-e2e
+        image: zeno15/zeno-habit-e2e
+        imagePullPolicy: Always
+        env:
+        - name: CYPRESS_BFF_URL
+          value: 'https://habit-web-dev.markdavison.kiwi/'
