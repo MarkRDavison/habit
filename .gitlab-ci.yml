@@ -187,9 +187,6 @@ end to end tests:
       optional: true
   artifacts:
     expire_in: "1h"
-    paths:
-     - "zeno-habit-e2e/cypress/screenshots"
-     - "zeno-habit-e2e/cypress/videos"
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:

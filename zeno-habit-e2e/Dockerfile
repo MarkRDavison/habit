@@ -1,4 +1,4 @@
-FROM node:alpine as BUILD
+FROM cypress/base:12.6.0 as BUILD
 
 WORKDIR /app
 
