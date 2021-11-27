@@ -173,8 +173,6 @@ end to end tests:
       - charts/**/*
       when: always
     - when: never
-  before_script:
-    - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
   script:
     - kubectl version 
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
