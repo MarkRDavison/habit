@@ -174,14 +174,18 @@ end to end tests:
       when: always
     - when: never
   script:
+    - helm version
     - kubectl version 
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - helm version
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - apk add --update npm
+    - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - kubectl wait --for=condition=Ready pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - apk add --update npm    
+    - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - sleep 60
     - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - cd zeno-habit-e2e
+    - npm ci
     - npm run test:e2ehl
     - sleep 20
   after_script:
