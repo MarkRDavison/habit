@@ -178,16 +178,12 @@ end to end tests:
     - kubectl version 
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - apk add --update npm    
     - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - sleep 60
-    - kubectl get all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - apk add --update npm
     - cd zeno-habit-e2e
     - npm ci
     - npm run test:e2ehl
-    - sleep 20
   after_script:
     - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
 
