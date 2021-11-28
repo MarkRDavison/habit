@@ -5,6 +5,7 @@ metadata:
   labels:
     app: zeno-habit-e2e
 spec:
+  backoffLimit: 0
   template:
     spec:
       restartPolicy: Never

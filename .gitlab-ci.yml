@@ -95,10 +95,18 @@ publish web:
       - zeno-habit-web/**/*
       when: always
     - when: never
+  artifacts:
+    expire_in: "1h"
+    paths:
+      - variables
+    when: always
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --context ./zeno-habit-web/ --dockerfile ./zeno-habit-web/Dockerfile --destination "$CR_USERNAME"/zeno-habit-web:$IMAGE_TAG
+    - mkdir -p variables
+    - export WEB_IMAGE_TAG=$IMAGE_TAG
+    - echo $WEB_IMAGE_TAG >> variables/web_image_tag
 
 
 publish bff:
@@ -121,10 +129,18 @@ publish bff:
       - zeno-habit-bff/**/*
       when: always
     - when: never
+  artifacts:
+    expire_in: "1h"
+    paths:
+      - variables
+    when: always
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --insecure --context ./zeno-habit-bff/ --dockerfile ./zeno-habit-bff/Dockerfile --destination zeno15/zeno-habit-bff:$IMAGE_TAG
+    - mkdir -p variables
+    - export BFF_IMAGE_TAG=$IMAGE_TAG
+    - echo $BFF_IMAGE_TAG >> variables/bff_image_tag
 
 publish api:
   stage: package
@@ -146,10 +162,18 @@ publish api:
       - zeno-habit-api/**/*
       when: always
     - when: never
+  artifacts:
+    expire_in: "1h"
+    paths:
+      - variables
+    when: always
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
     - /kaniko/executor --insecure --context ./zeno-habit-api/ --dockerfile ./zeno-habit-api/Dockerfile --destination zeno15/zeno-habit-api:$IMAGE_TAG
+    - mkdir -p variables
+    - export API_IMAGE_TAG=$IMAGE_TAG
+    - echo $API_IMAGE_TAG >> variables/api_image_tag
 
 publish e2e:
   stage: package
@@ -185,6 +209,15 @@ end to end tests:
   needs:
     - job: "publish e2e"
       optional: true
+    - job: "publish web"
+      optional: true
+      artifacts: true
+    - job: "publish bff"
+      optional: true
+      artifacts: true
+    - job: "publish api"
+      optional: true
+      artifacts: true
   artifacts:
     expire_in: "1h"
   rules:
@@ -200,10 +233,13 @@ end to end tests:
       when: always
     - when: never
   script:
+    - export WEB_IMAGE_TAG=`cat variables/web_image_tag 2> /dev/null || echo latest`
+    - export BFF_IMAGE_TAG=`cat variables/bff_image_tag 2> /dev/null || echo latest`
+    - export API_IMAGE_TAG=`cat variables/api_image_tag 2> /dev/null || echo latest`
     - export E2E_IMAGE_TAG=$IMAGE_TAG
     - envsubst < ./zeno-habit-e2e/e2e-dep.yaml | tee ./zeno-habit-e2e/dep-subst.yaml
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-    - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$IMAGE_TAG" --set bff.tag="$IMAGE_TAG" --set web.tag="$IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$API_IMAGE_TAG" --set bff.tag="$BFF_IMAGE_TAG" --set web.tag="$WEB_IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --timeout=600s --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl apply -f ./zeno-habit-e2e/dep-subst.yaml -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready --timeout=600s pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
