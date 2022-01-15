@@ -17,6 +17,10 @@ api: {
     secret: [
     ],
     public: {
+      ZENO_HABIT__DATABASE_TYPE: 'sqlite',
+      ZENO_HABIT__CONNECTION_STRING: 'Data Source=localdatabase.db',
+      ZENO_HABIT__URL: 'http://localhost:50000',
+      ZENO_HABIT__AUTHORITY: 'https://auth.markdavison.kiwi/auth/realms/markdavison.kiwi'
     }
   }
 }

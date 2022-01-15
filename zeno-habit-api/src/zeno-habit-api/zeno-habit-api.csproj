@@ -1,12 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>zeno_habit_api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="localdatabase.db" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Core" Version="6.0.1" />
+    <PackageReference Include="Npgsql" Version="6.0.2" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\zeno-habit-api-data\zeno-habit-api-data.csproj" />
+    <ProjectReference Include="..\zeno-habit-api-framework\zeno-habit-api-framework.csproj" />
+    <ProjectReference Include="..\zeno-habit-api-service\zeno-habit-api-service.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,8 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <RootNamespace>zeno_habit_api_core</RootNamespace>
+  </PropertyGroup>
+
+</Project>
