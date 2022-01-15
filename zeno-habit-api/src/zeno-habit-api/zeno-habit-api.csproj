@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <None Remove="localdatabase.db" />
+    <None Remove="localdatabase.db-shm" />
+    <None Remove="localdatabase.db-wal" />
   </ItemGroup>
 
   <ItemGroup>
