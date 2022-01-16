@@ -89,10 +89,13 @@ const useApiProxyMiddleware = (app: express.Application): void => {
         changeOrigin: true,
         onProxyReq: (proxyReq, req, res) => {
             let expressReq = req as express.Request;
+            
             console.log(`BEGIN - BFF Proxying request: ${req.method} - ${req.url}`);
+
             if (!!authState.access_token) {
                 proxyReq.setHeader('Authorization', `bearer ${authState.access_token}`);
             }
+
             if (!!expressReq.session.user) {
                 proxyReq.setHeader('sub', expressReq.session.user.sub);
             }
@@ -101,9 +104,11 @@ const useApiProxyMiddleware = (app: express.Application): void => {
             if (!proxyRes){
                 return;
             }
+
             if (!!proxyRes.headers['www-authenticate']){
                 console.log('www-authenticate: ', proxyRes.headers['www-authenticate']);
             }
+
             console.log(`END - BFF Proxied request: ${req.method} - ${req.url} - ${proxyRes.statusCode}`);
 
             if ((proxyRes.statusCode || 0) >= 400 && 499 <= (proxyRes.statusCode || 0)) {                

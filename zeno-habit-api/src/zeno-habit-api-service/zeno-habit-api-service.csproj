@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\zeno-habit-api-data\zeno-habit-api-data.csproj" />
+    <ProjectReference Include="..\zeno-habit-api-framework\zeno-habit-api-framework.csproj" />
+  </ItemGroup>
+
 </Project>

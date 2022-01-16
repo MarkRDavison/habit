@@ -5,4 +5,9 @@
     <RootNamespace>zeno_habit_api_core</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\zeno-habit-api-data\zeno-habit-api-data.csproj" />
+    <ProjectReference Include="..\zeno-habit-api-service\zeno-habit-api-service.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -8,10 +8,10 @@ namespace zeno_habit_api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HabitController : BaseController<Habit>
+    public class OccurenceController : BaseController<Occurence>
     {
-        public HabitController(
-            ILogger<HabitController> logger,
+        public OccurenceController(
+            ILogger<OccurenceController> logger,
             IServiceScopeFactory serviceScopeFactory) :
         base(
             logger,
