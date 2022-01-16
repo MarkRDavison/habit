@@ -8,9 +8,14 @@ using Microsoft.Net.Http.Headers;
 using System;
 using zeno_habit_api.Core;
 using zeno_habit_api.Util;
+using zeno_habit_api_core.Defaulters;
+using zeno_habit_api_core.Validators;
+using zeno_habit_api_data.Models;
 using zeno_habit_api_data.Services;
 using zeno_habit_api_data.Services.Interfaces;
 using zeno_habit_api_framework.Configuration;
+using zeno_habit_api_service.Services;
+using zeno_habit_api_service.Services.Interfaces;
 
 namespace zeno_habit_api {
     public class Startup {
@@ -20,6 +25,17 @@ namespace zeno_habit_api {
 
         public IConfiguration Configuration { get; }
         public AppSettings AppSettings { get; set; }
+
+        public static void RegisterEntityServices(IServiceCollection services)
+        {
+            services.AddTransient<IEntityService<Habit>, EntityService<Habit>>();
+            services.AddTransient<IEntityValidator<Habit>, HabitValidator>();
+            services.AddTransient<IEntityDefaulter<Habit>, HabitDefaulter>();
+
+            services.AddTransient<IEntityService<Occurence>, EntityService<Occurence>>();
+            services.AddTransient<IEntityValidator<Occurence>, OccurenceValidator>();
+            services.AddTransient<IEntityDefaulter<Occurence>, OccurenceDefaulter>();
+        }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -32,7 +48,8 @@ namespace zeno_habit_api {
                     ForwardedHeaders.XForwardedHost |
                     ForwardedHeaders.XForwardedProto;
             });
-            services.AddControllers();
+            services
+                .AddControllers();
             services.ConfigureHealthCheckServices();
 
             services
@@ -42,7 +59,7 @@ namespace zeno_habit_api {
             services.AddSingleton<IApplicationState, ApplicationState>();
             services.AddTransient<IRepository, Repository>();
 
-            services.AddHostedService<HabitEngineService>();
+            RegisterEntityServices(services);
 
             services.ConfigureAuthServices(AppSettings);
 

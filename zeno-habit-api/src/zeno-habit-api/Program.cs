@@ -5,9 +5,10 @@ using System;
 using System.Diagnostics;
 
 namespace zeno_habit_api {
+
     public class Program {
+
         public static void Main(string[] args) {
-            Debugger.Launch();
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -21,5 +22,7 @@ namespace zeno_habit_api {
                     configurationBuilder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
                     configurationBuilder.AddEnvironmentVariables();
                 });
+                
     }
+
 }

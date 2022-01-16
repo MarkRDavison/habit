@@ -12,7 +12,7 @@ declare global {
 
 const createConfig = (): Config => {
     return {
-        ZENO_HABIT_BFF_BASE_URI: window.ENV.ZENO_HABIT_BFF_BASE_URI ?? 'http://localhost:40000'
+        ZENO_HABIT_BFF_BASE_URI: window?.ENV?.ZENO_HABIT_BFF_BASE_URI ?? 'http://localhost:40000'
     }
 }
 

@@ -57,7 +57,7 @@ build bff:
 
 build api:
   stage: build
-  image: mcr.microsoft.com/dotnet/sdk:5.0
+  image: mcr.microsoft.com/dotnet/sdk:6.0
   rules:
     - changes:
       - zeno-habit-api/**/*
@@ -191,11 +191,7 @@ publish e2e:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         IMAGE_TAG: "latest"
-    - changes:
-      - zeno-habit-e2e/**/*
-      - charts/**/*
-      when: always
-    - when: never
+    - when: always
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CR_REGISTRY\":{\"auth\":\"$(echo -n ${CR_USERNAME}:${CR_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
@@ -238,6 +234,7 @@ end to end tests:
     - export API_IMAGE_TAG=`cat variables/api_image_tag 2> /dev/null || echo latest`
     - export E2E_IMAGE_TAG=$IMAGE_TAG
     - envsubst < ./zeno-habit-e2e/e2e-dep.yaml | tee ./zeno-habit-e2e/dep-subst.yaml
+    - kubectl delete namespace ${APP_NAME}-dev --ignore-not-found=true --kubeconfig "$KUBE_CONFIG"
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$API_IMAGE_TAG" --set bff.tag="$BFF_IMAGE_TAG" --set web.tag="$WEB_IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --timeout=600s --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
@@ -246,7 +243,7 @@ end to end tests:
     - kubectl logs -f job/zeno-habit-e2e-job -n zeno-habit-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Complete --timeout=5s job/zeno-habit-e2e-job -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
   after_script:
-    - kubectl delete namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - kubectl delete namespace ${APP_NAME}-dev --ignore-not-found=true --kubeconfig "$KUBE_CONFIG"
 
 deploy to production:
   stage: deploy

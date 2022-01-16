@@ -25,6 +25,7 @@ const App = (): JSX.Element => {
                             const response = await axios.get(`${config.ZENO_HABIT_BFF_BASE_URI}/api/habit`, {
                                 withCredentials: true
                             });
+                            
                             alert(JSON.stringify(response.data));
                         }}>API CALL</button>
                     </div>} />

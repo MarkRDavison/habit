@@ -33,9 +33,40 @@ namespace zeno_habit_api_data.Services
                 .Property(_ => _.Name)
                 .IsRequired()
                 .HasMaxLength(255);
+            modelBuilder
+                .Entity<Habit>()
+                .Property(_ => _.CreatedByUserId)
+                .IsRequired();
+            modelBuilder
+                .Entity<Habit>()
+                .Property(_ => _.CreatedDate)
+                .IsRequired();
+            #endregion
+            #region Occurence
+            modelBuilder
+                .Entity<Occurence>()
+                .HasKey(_ => _.Id);
+            modelBuilder
+                .Entity<Occurence>()
+                .Property(_ => _.Id)
+                .IsRequired()
+                .ValueGeneratedOnAdd();
+            modelBuilder
+                .Entity<Occurence>()
+                .Property(_ => _.CreatedDate)
+                .IsRequired();
+            modelBuilder
+                .Entity<Occurence>()
+                .Property(_ => _.CreatedByUserId)
+                .IsRequired();
+            modelBuilder
+                .Entity<Occurence>()
+                .Property(_ => _.HabitId)
+                .IsRequired();
             #endregion
         }
 
         public DbSet<Habit> Habits { get; set; }
+        public DbSet<Occurence> Occurences { get; set; }
     }
 }
