@@ -73,7 +73,7 @@ build api:
       cobertura:
        - ./zeno-habit-api/artifacts/*/coverage.cobertura.xml
       junit:
-       - ./**/*test-result.xml
+       - ./zeno-habit-api/artifacts/*test-result.xml
 
 publish web:
   stage: package
