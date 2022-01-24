@@ -7,6 +7,7 @@ namespace zeno_habit_api_data.Models
         public Guid Id { get; set; }
         public Guid HabitId { get; set; }
         public string CreatedByUserId { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public DateTime OccurenceDate { get; set; }
     }
 }

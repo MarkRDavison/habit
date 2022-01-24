@@ -4,8 +4,12 @@
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>zeno_habit_api_service</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>warnings</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Linq.Expressions" Version="4.3.0" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\zeno-habit-api-data\zeno-habit-api-data.csproj" />

@@ -1,9 +1,11 @@
 module.exports = {
     parser: '@typescript-eslint/parser',
-    plugins: ['react', '@typescript-eslint'],
+    plugins: ['react', '@typescript-eslint', 'jest'],
+    env: {
+        "jest/globals": true,
+        "jest": true
+    },
     extends: [
-        "react-app",
-        "react-app/jest",
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",
@@ -20,8 +22,11 @@ module.exports = {
     },
     rules: {
         "no-console": "error",
-        "import/first": "error",
-        "react/prop-types": "off"
+        "react/prop-types": "off",
+        "@typescript-eslint/no-empty-interface": 0,
+        "quotes": [2, "single", { "avoidEscape": true }],
+        "@typescript-eslint/explicit-function-return-type": 2,
+        "@typescript-eslint/no-unused-vars": 0
     },
     settings: {
         react: {

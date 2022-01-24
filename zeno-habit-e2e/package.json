@@ -3,13 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test:e2ehl": "cypress run --headless"
+    "cypress": "cypress open",
+    "test:e2ehl": "cypress run --headless --config-file cypress.json",
+    "test:e2ehlk8s": "cypress run --headless --config-file cypress-k8s.json"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "cypress": "^9.1.0",
     "cypress-dotenv": "^2.0.0",
+    "cypress-keycloak-commands": "^1.2.0",
     "dotenv": "^10.0.0"
   }
 }

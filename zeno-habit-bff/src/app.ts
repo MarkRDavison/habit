@@ -42,7 +42,7 @@ const useSessionMiddleware = (app: express.Application): void => {
             maxAge: config.SESSION_TIMEOUT
         }
     }))
-}
+};
 
 const useApiAuthMiddleWare = (app: express.Application, apiConfig: OpenidConfig, API_CLIENT_ID: string, API_CLIENT_SECRET: string): void => {
     app.use(async (req, res, next) => {
@@ -56,7 +56,7 @@ const useApiAuthMiddleWare = (app: express.Application, apiConfig: OpenidConfig,
                 }
             } else {
                 // We don't have an access token, we need to get one
-                const headers =  {
+                const headers = {
                     'Content-type': 'application/x-www-form-urlencoded'
                 };
                 const response = await axios.post(apiConfig.token_endpoint,
@@ -67,9 +67,9 @@ const useApiAuthMiddleWare = (app: express.Application, apiConfig: OpenidConfig,
                     headers: headers,
                     withCredentials: true
                 });
-                
+
                 const { access_token, refresh_token } = response.data as AuthTokens;
-              
+
                 authState.access_token = access_token;
                 authState.refresh_token = refresh_token;
             }
@@ -89,7 +89,7 @@ const useApiProxyMiddleware = (app: express.Application): void => {
         changeOrigin: true,
         onProxyReq: (proxyReq, req, res) => {
             let expressReq = req as express.Request;
-            
+
             console.log(`BEGIN - BFF Proxying request: ${req.method} - ${req.url}`);
 
             if (!!authState.access_token) {
@@ -101,17 +101,17 @@ const useApiProxyMiddleware = (app: express.Application): void => {
             }
         },
         onProxyRes: (proxyRes, req, res) => {
-            if (!proxyRes){
+            if (!proxyRes) {
                 return;
             }
 
-            if (!!proxyRes.headers['www-authenticate']){
+            if (!!proxyRes.headers['www-authenticate']) {
                 console.log('www-authenticate: ', proxyRes.headers['www-authenticate']);
             }
 
             console.log(`END - BFF Proxied request: ${req.method} - ${req.url} - ${proxyRes.statusCode}`);
 
-            if ((proxyRes.statusCode || 0) >= 400 && 499 <= (proxyRes.statusCode || 0)) {                
+            if ((proxyRes.statusCode || 0) >= 400 && 499 <= (proxyRes.statusCode || 0)) {
                 authState.access_token = '';
                 authState.refresh_token = '';
             }

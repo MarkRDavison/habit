@@ -51,7 +51,7 @@ namespace zeno_habit_api_service.Services
             }
         }
 
-        public async Task<T?> SaveEntityAsync(T entity, CancellationToken cancellationToken)
+        public async Task<T> SaveEntityAsync(T entity, CancellationToken cancellationToken)
         {
             using (logger.ProfileOperation())
             {
@@ -62,7 +62,7 @@ namespace zeno_habit_api_service.Services
                     var errors = await validator.Validate(entity);
                     if (errors.Any())
                     {
-                        throw new AggregateException($"Validate {typeof(T).Name} failed", errors.Select(e => new Exception(e)));
+                        throw new AggregateException($"Validate {typeof(T).Name} failed", errors.Select(e => new Exception(e.Message)));
                     }
 
                     using (var transaction = repository.BeginTransaction())

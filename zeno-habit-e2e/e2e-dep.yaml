@@ -9,6 +9,11 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      volumes:
+      - name: cluster-nfs
+        nfs:
+          server: nfs.markdavison.kiwi
+          path: /media/dell2tb/cluster/nfs/e2e/habit
       containers:
       - name: zeno-habit-e2e
         image: zeno15/zeno-habit-e2e:$E2E_IMAGE_TAG
@@ -18,3 +23,17 @@ spec:
           value: 'https://habit-web-dev.markdavison.kiwi/'
         - name: CYPRESS_BFF_URL
           value: 'https://habit-bff-dev.markdavison.kiwi/'
+        - name: CYPRESS_KC_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: 'zeno-habit-dev-secret'
+              key: KC_USERNAME
+        - name: CYPRESS_KC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: 'zeno-habit-dev-secret'
+              key: KC_PASSWORD
+        volumeMounts:
+        - name: cluster-nfs
+          mountPath: /mnt/cluster/habit-e2e
+  

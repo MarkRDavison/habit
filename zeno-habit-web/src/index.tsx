@@ -1,8 +1,11 @@
-import { AuthContext, AuthEndpoints } from "@mark.davison/zeno-common-client";
-import React from "react";
+import { AuthContext, AuthEndpoints } from '@mark.davison/zeno-common-client';
+import axios from 'axios';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import App from "./App";
-import config from "./util/config";
+import { Provider } from 'react-redux';
+import App from './App';
+import createHabitStore from './store/store';
+import config from './util/config';
 
 const authEndpoints: AuthEndpoints = {
     loginEndpoint: config.ZENO_HABIT_BFF_BASE_URI + '/auth/login',
@@ -10,10 +13,15 @@ const authEndpoints: AuthEndpoints = {
     userEndpoint: config.ZENO_HABIT_BFF_BASE_URI + '/auth/user'
 }
 
-console.log(authEndpoints.userEndpoint);
+axios.defaults.baseURL = config.ZENO_HABIT_BFF_BASE_URI;
+axios.defaults.withCredentials = true;
+
+const store = createHabitStore()
 
 ReactDOM.render(
-<AuthContext
-    {...authEndpoints}>
-    <App />
-</AuthContext>, document.getElementById("root"));
+    <Provider store={store}>
+        <AuthContext
+            {...authEndpoints}>
+            <App />
+        </AuthContext>
+    </Provider>, document.getElementById('root'));

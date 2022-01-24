@@ -66,7 +66,7 @@ namespace zeno_habit_api_data.Services
             #endregion
         }
 
-        public DbSet<Habit> Habits { get; set; }
-        public DbSet<Occurence> Occurences { get; set; }
+        public DbSet<Habit> Habits { get; set; } = null!;
+        public DbSet<Occurence> Occurences { get; set; } = null!;
     }
 }

@@ -16,7 +16,7 @@ namespace zeno_habit_api_core.Defaulters
                 entity.CreatedByUserId = user.Sub;
             }
 
-            if (entity.CreatedDate == DateTime.MinValue)
+            if (entity.CreatedDate == null || entity.CreatedDate == DateTime.MinValue)
             {
                 entity.CreatedDate = DateTime.UtcNow.Date;
             }

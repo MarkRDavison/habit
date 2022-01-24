@@ -5,13 +5,14 @@
   "scripts": {
     "test": "jest --verbose --runInBand --detectOpenHandles",
     "test:watch": "jest --runInBand --watchAll",
-    "test:ci": "jest --ci --coverage --reporters=default --reporters=jest-junit",
+    "test:ci": "jest --ci --verbose --coverage --reporters=default --reporters=jest-junit",
     "tsc": "tsc",
     "build": "webpack",
     "start:dev": "webpack-dev-server",
     "serve": "serve -s dist/ -p 30000",
     "start:served": "npm run build && node server.mjs",
-    "serve:served": "node server.mjs"
+    "serve:served": "node server.mjs",
+    "lint": "eslint --ext ts,tsx src/ --fix"
   },
   "author": "",
   "license": "ISC",
@@ -23,13 +24,16 @@
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "^7.15.0",
     "@babel/register": "^7.15.3",
+    "@mui/material": "^5.3.0",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^12.0.0",
-    "@types/jest": "^27.0.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.4.0",
     "@types/react": "^17.0.19",
     "@types/react-dom": "^17.0.9",
     "@types/react-router": "^5.1.17",
     "@types/react-router-dom": "^5.3.1",
+    "@types/uuid": "^8.3.4",
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "babel-loader": "^8.2.2",
@@ -37,7 +41,10 @@
     "cssnano": "^5.0.8",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-jest": "^25.7.0",
     "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "html-webpack-plugin": "^5.3.2",
     "husky": "^7.0.1",
     "jest": "^27.0.6",
@@ -62,52 +69,6 @@
       "git add"
     ]
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "<rootDir>/tsconfig.test.json"
-      }
-    },
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!src/**/*.d.ts",
-      "!src/index.tsx",
-      "!src/serviceWorker.ts",
-      "!src/reportWebVitals.ts"
-    ],
-    "coveragePathIgnorePatterns": [
-      "./src/*/*.types.{ts,tsx}",
-      "./src/index.tsx",
-      "./src/serviceWorker.ts"
-    ],
-    "coverageReporters": [
-      "json",
-      "lcov",
-      "text-summary",
-      "clover"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 95,
-        "branches": 95,
-        "lines": 95,
-        "functions": 95
-      }
-    },
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/ts-jest"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
-      "^.+\\.module\\.(css|sass|scss)$"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy",
-      "src/(.*)$": "<rootDir>/src/$1"
-    }
-  },
   "peerDependencies": {
     "@mark.davison/zeno-common": "^0.1.6"
   },
@@ -116,15 +77,18 @@
     "@emotion/styled": "^11.3.0",
     "@mark.davison/zeno-common-client": "^0.1.16",
     "@mui/icons-material": "^5.0.4",
-    "@mui/material": "^5.0.4",
     "axios": "^0.24.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-redux": "^7.2.6",
     "react-router": "^5.2.1",
     "react-router-dom": "^5.3.0",
+    "redux": "^4.1.2",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.4.1",
     "serve": "^12.0.0"
   }
 }

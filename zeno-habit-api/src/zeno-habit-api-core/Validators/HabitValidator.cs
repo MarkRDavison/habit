@@ -1,26 +1,34 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using zeno_habit_api_data.Models;
+using zeno_habit_api_service.Services;
 using zeno_habit_api_service.Services.Interfaces;
 
 namespace zeno_habit_api_core.Validators
 {
-    public class HabitValidator : IEntityValidator<Habit>
+    public class HabitValidator : EntityValidator<Habit>
     {
-        public Task<IEnumerable<string>> Validate(Habit entity)
+        public override async Task<IList<EntityValidation>> Validate(Habit entity)
         {
-            List<string> errors = new List<string>();
+            var errors = new List<EntityValidation>();
 
-            if (string.IsNullOrEmpty(entity.Name))
+            if (!IsNew(entity))
             {
-                errors.Add("Habit.Name is a required field");
-            }
-            else if (entity.Name.Length > 20)
-            {
-                errors.Add("Habit.Name must be less than 20 characters");
+                ValidateRequiredProperty(entity, _ => _.CreatedByUserId, errors);
+                ValidateRequiredProperty(entity, _ => _.CreatedDate, errors);
             }
 
-            return Task.FromResult<IEnumerable<string>>(errors);
+            if (ValidateRequiredProperty(entity, _ => _.Name, errors))
+            {
+                ValidateLength(entity, _ => _.Name, errors, 20, 4);
+            }
+            if (ValidateRequiredProperty(entity, _ => _.Question, errors))
+            {
+                ValidateLength(entity, _ => _.Question, errors, 40, 4);
+            }
+
+            await Task.CompletedTask;
+            return errors;
         }
     }
 }

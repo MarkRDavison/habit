@@ -19,11 +19,16 @@ namespace zeno_habit_api.Core
             if (httpContextAccessor.HttpContext != null)
             {
                 var clone = principal.Clone();
-                var newIdentity = (ClaimsIdentity)clone.Identity;
-                if (httpContextAccessor.HttpContext.Items.TryGetValue(AuthConstants.Token.ProxiedUserId, out var v))
+                if (clone.Identity is ClaimsIdentity newIdentity)
                 {
-                    var claim = new Claim(AuthConstants.Token.ProxiedUserId, v as string);
-                    newIdentity.AddClaim(claim);
+                    if (httpContextAccessor.HttpContext.Items.TryGetValue(AuthConstants.Token.ProxiedUserId, out var v))
+                    {
+                        if (v is string vstr)
+                        {
+                            var claim = new Claim(AuthConstants.Token.ProxiedUserId, vstr);
+                            newIdentity.AddClaim(claim);
+                        }
+                    }
                 }
 
                 return await Task.FromResult(clone);
