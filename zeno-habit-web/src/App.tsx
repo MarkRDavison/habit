@@ -1,43 +1,33 @@
 import React from 'react';
 import * as zcc from '@mark.davison/zeno-common-client'
 import NavBar from './FrameworkComponents/NavBar';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import axios from 'axios';
-import config from './util/config';
+import { Route, Router, Switch } from 'react-router-dom';
+import HomePage from './components/HomePage';
+import HabitPage from './components/HabitPage';
+import AlertBar from './FrameworkComponents/AlertBar';
+import { createBrowserHistory } from 'history';
 
+const history = createBrowserHistory();
+
+/* istanbul ignore next */
 const App = (): JSX.Element => {
-
-    const {
-        user,
-        isLoggedIn,
-        isLoggingIn
-    } = zcc.useAuth();
-
     return (
         <div>
-            <BrowserRouter>
+            <Router history={history}>
                 <NavBar />
+                <AlertBar />
                 <Switch>
-                    <zcc.PrivateRoute path='/private' component={() => 
-                    <div>
-                        <h1>PRIVATE</h1>
-                        <button onClick={async () => {
-                            const response = await axios.get(`${config.ZENO_HABIT_BFF_BASE_URI}/api/habit`, {
-                                withCredentials: true
-                            });
-                            
-                            alert(JSON.stringify(response.data));
-                        }}>API CALL</button>
-                    </div>} />
-                    <Route path='/'>
+                    <Route path='/public'>
                         <div>
-                            <h1>HOME</h1>
+                            <h1>zskdjfhlkjsdzfshjgkdblf</h1>
                         </div>
                     </Route>
+                    <zcc.PrivateRoute path='/habit/:id' component={(): JSX.Element => <HabitPage />} />
+                    <zcc.PrivateRoute path='/' component={(): JSX.Element => <HomePage />} />
                 </Switch>
-            </BrowserRouter>
+            </Router>
         </div>
     );
-}
+};
 
 export default App;

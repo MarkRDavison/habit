@@ -65,6 +65,10 @@ namespace zeno_habit_api_test.Framework
         protected async Task<T> PostAsAsyncWithSuccessfulResponse<T>(string uri, T data, IEnumerable<Claim> claims = null)
         {
             var response = await PostAsync(uri, data, claims);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine(await response.Content.ReadAsStringAsync()); 
+            }
             response.EnsureSuccessStatusCode();
             return await ReadAsAsync<T>(response);
         }

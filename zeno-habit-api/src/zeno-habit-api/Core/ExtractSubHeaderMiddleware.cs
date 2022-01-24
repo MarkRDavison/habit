@@ -17,7 +17,7 @@ namespace zeno_habit_api.Core
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.User.Identity.IsAuthenticated)
+            if (context.User.Identity?.IsAuthenticated ?? false)
             {
                 bool valid = false;
                 if (context.Request.Headers.TryGetValue(AuthConstants.Token.Sub, out var v))

@@ -14,7 +14,7 @@ build web:
   image: node:alpine
   rules:
     - changes:
-      - zeno-habit-web/**/*
+        - zeno-habit-web/**/*
       when: always
     - when: never
   script:
@@ -23,21 +23,22 @@ build web:
     - npm config set //gitlab.markdavison.kiwi/api/v4/packages/npm/:_authToken=${CI_JOB_TOKEN}
     - npm ci
     - npm run build
+    - npm run lint
     - npm run test:ci
   artifacts:
-      when: always
-      reports:
-        cobertura:
-          - ./zeno-habit-web/coverage/cobertura-coverage.xml
-        junit:
-          - ./zeno-habit-web/junit.xml
+    when: always
+    reports:
+      cobertura:
+        - ./zeno-habit-web/coverage/cobertura-coverage.xml
+      junit:
+        - ./zeno-habit-web/junit.xml
 
 build bff:
   stage: build
   image: node:alpine
   rules:
     - changes:
-      - zeno-habit-bff/**/*
+        - zeno-habit-bff/**/*
       when: always
     - when: never
   script:
@@ -48,19 +49,19 @@ build bff:
     - npm run build
     - npm run test:ci
   artifacts:
-      when: always
-      reports:
-        cobertura:
-          - ./zeno-habit-bff/coverage/cobertura-coverage.xml
-        junit:
-          - ./zeno-habit-bff/junit.xml
+    when: always
+    reports:
+      cobertura:
+        - ./zeno-habit-bff/coverage/cobertura-coverage.xml
+      junit:
+        - ./zeno-habit-bff/junit.xml
 
 build api:
   stage: build
   image: mcr.microsoft.com/dotnet/sdk:6.0
   rules:
     - changes:
-      - zeno-habit-api/**/*
+        - zeno-habit-api/**/*
       when: always
     - when: never
   script:
@@ -71,9 +72,9 @@ build api:
     when: always
     reports:
       cobertura:
-       - ./zeno-habit-api/artifacts/*/coverage.cobertura.xml
+        - ./zeno-habit-api/artifacts/*/coverage.cobertura.xml
       junit:
-       - ./zeno-habit-api/artifacts/*test-result.xml
+        - ./zeno-habit-api/artifacts/*test-result.xml
 
 publish web:
   stage: package
@@ -92,7 +93,7 @@ publish web:
       variables:
         IMAGE_TAG: "latest"
     - changes:
-      - zeno-habit-web/**/*
+        - zeno-habit-web/**/*
       when: always
     - when: never
   artifacts:
@@ -107,7 +108,6 @@ publish web:
     - mkdir -p variables
     - export WEB_IMAGE_TAG=$IMAGE_TAG
     - echo $WEB_IMAGE_TAG >> variables/web_image_tag
-
 
 publish bff:
   stage: package
@@ -126,7 +126,7 @@ publish bff:
       variables:
         IMAGE_TAG: "latest"
     - changes:
-      - zeno-habit-bff/**/*
+        - zeno-habit-bff/**/*
       when: always
     - when: never
   artifacts:
@@ -159,7 +159,7 @@ publish api:
       variables:
         IMAGE_TAG: "latest"
     - changes:
-      - zeno-habit-api/**/*
+        - zeno-habit-api/**/*
       when: always
     - when: never
   artifacts:
@@ -221,11 +221,11 @@ end to end tests:
       variables:
         IMAGE_TAG: "latest"
     - changes:
-      - zeno-habit-web/**/*
-      - zeno-habit-bff/**/*
-      - zeno-habit-api/**/*
-      - zeno-habit-e2e/**/*
-      - charts/**/*
+        - zeno-habit-web/**/*
+        - zeno-habit-bff/**/*
+        - zeno-habit-api/**/*
+        - zeno-habit-e2e/**/*
+        - charts/**/*
       when: always
     - when: never
   script:
@@ -236,14 +236,13 @@ end to end tests:
     - envsubst < ./zeno-habit-e2e/e2e-dep.yaml | tee ./zeno-habit-e2e/dep-subst.yaml
     - kubectl delete namespace ${APP_NAME}-dev --ignore-not-found=true --kubeconfig "$KUBE_CONFIG"
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
+    - kubectl apply -f ./zeno-habit-e2e/zeno-habit-dev-secret.yaml -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$API_IMAGE_TAG" --set bff.tag="$BFF_IMAGE_TAG" --set web.tag="$WEB_IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready pods --timeout=600s --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl apply -f ./zeno-habit-e2e/dep-subst.yaml -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Ready --timeout=600s pods --all --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl logs -f job/zeno-habit-e2e-job -n zeno-habit-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl wait --for=condition=Complete --timeout=5s job/zeno-habit-e2e-job -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
-  after_script:
-    - kubectl delete namespace ${APP_NAME}-dev --ignore-not-found=true --kubeconfig "$KUBE_CONFIG"
 
 deploy to production:
   stage: deploy

@@ -1,0 +1,9 @@
+{
+    "trashAssetsBeforeRuns": true,
+    "videoUploadOnPasses": false,
+    "chromeWebSecurity": false,
+    "port": 8084,
+    "defaultCommandTimeout": 30000,
+    "videosFolder": "/mnt/cluster/habit-e2e/videos",
+    "screenshotsFolder": "/mnt/cluster/habit-e2e/screenshots"
+}

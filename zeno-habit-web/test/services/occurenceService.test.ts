@@ -1,0 +1,5 @@
+describe('occurenceService', () => {
+    test('todo', () => {
+
+    });
+});

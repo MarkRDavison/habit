@@ -1,4 +1,7 @@
 {
     "trashAssetsBeforeRuns": true,
-    "videoUploadOnPasses": false
+    "videoUploadOnPasses": false,
+    "chromeWebSecurity": false,
+    "port": 8084,
+    "defaultCommandTimeout": 30000
 }

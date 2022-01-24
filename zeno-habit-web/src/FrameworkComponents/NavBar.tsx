@@ -1,71 +1,57 @@
 import React from 'react';
 import * as zcc from '@mark.davison/zeno-common-client';
-import { withRouter } from 'react-router';
+import { RouteComponentProps, withRouter } from 'react-router';
 import { AppBar, IconButton, Toolbar, Typography, Menu, MenuItem } from '@mui/material';
 import { Menu as MenuIcon, AccountCircle } from '@mui/icons-material';
 
-interface WithRouterProps {
-    history: any
-    location: any
-    match: any
-}
+type Props = RouteComponentProps;
 
-interface OwnProps {
-
-}
-
-type Props = WithRouterProps & OwnProps;
-
+/* istanbul ignore next */
 const _NavBar = (props: Props): JSX.Element => {
-    const [anchorEl, setAnchorEl] = React.useState(null);
-    const handleClick = (event: any) => {
+    const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
+    const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
         setAnchorEl(event.currentTarget);
     };
     const {
-      isLoggedIn,
-      user,
-      login,
-      logout
+        isLoggedIn,
+        login,
+        logout
     } = zcc.useAuth();
 
-    const handleClose = () => {
+    const handleClose = (): void => {
         setAnchorEl(null);
     };
-  
-    const navigate = (page: string) => {
-      props.history.push(page);
-      handleClose();
+
+    const navigate = (page: string): void => {
+        props.history.push(page);
+        handleClose();
     };
 
     return (
-        <div>            
-            <AppBar position="static">                
+        <div>
+            <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu" onClick={handleClick}>
                         <MenuIcon />
-                    </IconButton>                    
+                    </IconButton>
                     <Menu
                         id="application-menu"
                         aria-label="application-menu"
                         anchorEl={anchorEl}
                         onClose={handleClose}
                         open={anchorEl !== null}>
-                        <MenuItem onClick={() => navigate('/')}>Home</MenuItem>
-                        <MenuItem onClick={() => navigate('/private')}>Private</MenuItem>
-                        { isLoggedIn 
+                        <MenuItem onClick={(): void => navigate('/')}>Home</MenuItem>
+                        {isLoggedIn
                             ? <MenuItem onClick={logout}>Logout</MenuItem>
                             : <MenuItem onClick={login}>Login</MenuItem>
                         }
                     </Menu>
-                    <Typography variant="h5" style={{flexGrow: 1}}>
+                    <Typography variant="h5" style={{ flexGrow: 1 }}>
                         Zeno Habit
                     </Typography>
-                    <Typography variant="h5" style={{flexGrow: 1}}>
-                        {(isLoggedIn ? user?.name : null)}
-                    </Typography>
-                    <IconButton>
+                    <IconButton style={{ flexGrow: 1 }}>
                         <AccountCircle />
-                    </IconButton>   
+                    </IconButton>
                 </Toolbar>
             </AppBar>
         </div>

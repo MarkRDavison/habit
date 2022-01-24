@@ -8,6 +8,7 @@ COPY . .
 RUN npm ci
 RUN npm run build
 RUN npm run test
+RUN npm run lint
 
 # remove development dependencies
 RUN npm prune --production

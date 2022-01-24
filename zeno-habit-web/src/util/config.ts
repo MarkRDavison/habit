@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 export interface Config {
     ZENO_HABIT_BFF_BASE_URI: string
 }
@@ -9,6 +11,7 @@ declare global {
         }
     }
 }
+
 
 const createConfig = (): Config => {
     return {

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <RootNamespace>zeno_habit_api_data</RootNamespace>
+    <Nullable>warnings</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

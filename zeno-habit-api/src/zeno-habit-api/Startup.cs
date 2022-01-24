@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Net.Http.Headers;
 using System;
 using zeno_habit_api.Core;
 using zeno_habit_api.Util;
@@ -40,6 +39,7 @@ namespace zeno_habit_api {
         public void ConfigureServices(IServiceCollection services)
         {
             AppSettings = services.ConfigureSettingsServices(Configuration);
+            if (AppSettings == null) { throw new InvalidOperationException(); }
 
             services.Configure<ForwardedHeadersOptions>(options =>
             {
@@ -50,7 +50,8 @@ namespace zeno_habit_api {
             });
             services
                 .AddControllers();
-            services.ConfigureHealthCheckServices();
+            services
+                .ConfigureHealthCheckServices();
 
             services
                 .AddOptions<HostOptions>()
@@ -66,7 +67,9 @@ namespace zeno_habit_api {
             services.ConfigureDatabaseServices();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (AppSettings == null) { throw new InvalidOperationException(); }
             if (env.IsDevelopment()) {
                 app.UseDeveloperExceptionPage();
             }
@@ -79,10 +82,7 @@ namespace zeno_habit_api {
                 options.SetIsOriginAllowed(o => true);
             });
 
-            app.Use((context, next) => {
-                context.Response.Headers.Add(HeaderNames.AccessControlAllowCredentials, "true");
-                return next.Invoke();
-            });
+            app.UseMiddleware<AllowCredentialsMiddleware>();
 
             app.UseRouting();
             app.UseAuthentication();

@@ -11,6 +11,24 @@ namespace zeno_habit_api_test
     public class SanityTests : IntegrationTestBase
     {
         private static Random random = new Random();
+
+        internal Habit GenerateValidHabit()
+        {
+            return new Habit
+            {
+                Name = RandomString(10),
+                Question = $"{RandomString(15)}?"
+            };
+        }
+        internal Occurence GenerateValidOccurence(Habit habit)
+        {
+            return new Occurence
+            {
+                HabitId = habit.Id,
+                OccurenceDate = DateTime.Today
+            };
+        }
+
         public static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -48,10 +66,7 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task CreateHabitWorks()
         {
-            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit
-            {
-                Name = "Habit 1"
-            });
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
 
             Assert.AreNotEqual(Guid.Empty, habit.Id);
             Assert.AreEqual(Sub.ToString(), habit.CreatedByUserId);
@@ -61,10 +76,7 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task GetHabitWorks()
         {
-            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit
-            {
-                Name = "Habit 1"
-            });
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
             var habitFetched = await GetAsync<Habit>($"/api/habit/{habit.Id}");
 
             Assert.IsNotNull(habitFetched);
@@ -73,10 +85,10 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task GetHabitsWorks()
         {
-            await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit { Name = "Habit 1" });
-            await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit { Name = "Habit 2" });
-            await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit { Name = "Habit 3" });
-            await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit { Name = "Habit 4" });
+            await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
 
             var habits = await GetMultipleAsync<Habit>("/api/habit");
 
@@ -86,13 +98,8 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task CreateOccurenceWorks()
         {
-            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit
-            {
-                Name = "Habit 1"
-            });
-            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence {
-                HabitId = habit.Id
-            });
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
 
             Assert.AreNotEqual(Guid.Empty, occurence.Id);
             Assert.AreEqual(Sub.ToString(), occurence.CreatedByUserId);
@@ -102,14 +109,8 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task GetOccurenceWorks()
         {
-            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit
-            {
-                Name = "Habit 1"
-            });
-            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence
-            {
-                HabitId = habit.Id
-            });
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
 
             var occurenceFetched = await GetAsync<Occurence>($"/api/occurence/{occurence.Id}");
 
@@ -119,13 +120,13 @@ namespace zeno_habit_api_test
         [TestMethod]
         public async Task GetOccurencesWorks()
         {
-            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", new Habit{ Name = "Habit 1" });
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence { HabitId = habit.Id });
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence { HabitId = habit.Id });
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence { HabitId = habit.Id });
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", new Occurence { HabitId = habit.Id });
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
 
-            var occurences = await GetMultipleAsync<Habit>("/api/occurence");
+            var occurences = await GetMultipleAsync<Occurence>("/api/occurence");
 
             Assert.AreEqual(4, occurences.Count());
         }
