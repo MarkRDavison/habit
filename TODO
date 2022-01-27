@@ -1,3 +1,10 @@
+Todo:
+    -   redis caching behaviour for various habit detail sections, i.e. expensive process to calculate
+        and cache the results in redis for while?  sub results so completed weeks are cached but the current
+        week gets recalculated each time?
+    -   Dark theme
+
+Done:
 Add example tests hitting the docker compose containers
 Add code coverage to output and make tests fail if threshold not met
 cypress tests

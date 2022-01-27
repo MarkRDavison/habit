@@ -22,6 +22,7 @@ interface HabitsFetchedAction {
     type: typeof SET_HABITS_FETCHED,
     payload: Habit[]
 };
+
 interface HabitsAddedAction {
     type: typeof SET_HABITS_ADDED,
     payload: Habit[]

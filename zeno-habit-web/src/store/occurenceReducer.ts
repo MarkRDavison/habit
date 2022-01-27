@@ -2,6 +2,7 @@ import { Occurence } from '../models/Occurence';
 
 const SET_OCCURENCES_PROGRESSING = 'SET_OCCURENCES_PROGRESSING';
 const SET_OCCURENCES_FETCHED = 'SET_OCCURENCES_FETCHED';
+const SET_OCCURENCES_ADDED = 'SET_OCCURENCES_ADDED';
 const SET_OCCURENCES_REMOVED = 'SET_OCCURENCES_REMOVED';
 const SET_OCCURENCE_PROGRESS_ERROR = 'SET_OCCURENCE_PROGRESS_ERROR';
 
@@ -22,6 +23,11 @@ interface OccurencesFetchedAction {
     payload: Occurence[]
 };
 
+interface OccurencesAddedAction {
+    type: typeof SET_OCCURENCES_ADDED,
+    payload: Occurence[]
+};
+
 interface OccurencesFetchingAction {
     type: typeof SET_OCCURENCES_PROGRESSING
 };
@@ -38,6 +44,7 @@ interface OccurenceFetchErrorAction {
 
 export type OccurenceActionTypes =
     OccurencesFetchedAction |
+    OccurencesAddedAction |
     OccurencesFetchingAction |
     OccurencesRemovedAction |
     OccurenceFetchErrorAction;
@@ -45,6 +52,13 @@ export type OccurenceActionTypes =
 export function setOccurencesFetched(occurences: Occurence[]): OccurenceActionTypes {
     return {
         type: SET_OCCURENCES_FETCHED,
+        payload: occurences
+    };
+};
+
+export function setOccurencesAdded(occurences: Occurence[]): OccurenceActionTypes {
+    return {
+        type: SET_OCCURENCES_ADDED,
         payload: occurences
     };
 };
@@ -90,6 +104,11 @@ export function occurenceReducer(
                 ...state,
                 progressing: false,
                 occurences: action.payload
+            };
+        case SET_OCCURENCES_ADDED:
+            return {
+                ...state,
+                occurences: [...state.occurences.concat(action.payload)]
             };
         case SET_OCCURENCES_REMOVED:
             return {

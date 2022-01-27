@@ -3,5 +3,10 @@ export interface Occurence {
     habitId: string,
     createdByUserId: string,
     createdDate: string,
-    occurenceDate: string
+    occurenceDate: Date
+}
+
+export interface OccurenceCreationProps {
+    habitId: string,
+    occurenceDate: Date
 }

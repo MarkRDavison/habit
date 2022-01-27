@@ -5,11 +5,12 @@ import {
     setOccurencesFetched,
     setOccurencesProgressing,
     setOccurencesRemoved,
-    setOccurenceFetchError
+    setOccurenceFetchError,
+    setOccurencesAdded
 } from "../../src/store/occurenceReducer";
 
 const createOccurence = (id: string = ''): Occurence => {
-    return { id: id, habitId: '', createdByUserId: '', createdDate: '', occurenceDate: '' };
+    return { id: id, habitId: '', createdByUserId: '', createdDate: '', occurenceDate: new Date() };
 }
 
 describe('occurenceReducer', () => {
@@ -76,4 +77,21 @@ describe('occurenceReducer', () => {
         expect(state.error).toBeDefined();
         expect(state.progressing).toBeFalsy();
     });
+
+    test('adding a list of occurences increases the list in state', () => {
+        const initialState: OccurenceState = {
+            error: undefined,
+            progressing: false,
+            occurences: [
+                createOccurence('1'), createOccurence('2'), createOccurence('3')
+            ]
+        };
+
+        const state = occurenceReducer(initialState, setOccurencesAdded([
+            createOccurence('4'),
+            createOccurence('5')
+        ]));
+
+        expect(state.occurences).toHaveLength(5);
+    })
 });
