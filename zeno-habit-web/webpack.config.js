@@ -80,9 +80,12 @@ module.exports = {
         publicPath: '/'
     },
 
-    plugins: [new HtmlWebpackPlugin({
-        template: "src/index.html",
-        hash: true, // This is useful for cache busting
-        filename: 'index.html'
-    })]
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: "public/index.html",
+            hash: true, // This is useful for cache busting
+            filename: 'index.html',
+            favicon: "./public/favicon.ico"
+        })
+    ]
 }

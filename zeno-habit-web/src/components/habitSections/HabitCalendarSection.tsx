@@ -3,6 +3,7 @@ import { DispatchType, RootState } from '../../store/store';
 import { connect } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Card, Typography } from '@mui/material';
+import Constants from '../../models/Helpers';
 
 interface StateProps {
 
@@ -20,9 +21,6 @@ interface WithRouterProps extends RouteComponentProps {
 type OwnRouterProps = OwnProps & WithRouterProps;
 
 type Props = StateProps & DispatchProps & OwnRouterProps;
-
-const daysMap = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-const monthMap = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 const getNumberOfDays = (year: number, month: number): number => {
     return 40 - new Date(year, month, 40).getDate();
@@ -47,9 +45,9 @@ export const getCalendarHistory = (lastDay: Date, weeksBack: number): HistoryThi
         history.push({
             year: year,
             month: month,
-            monthS: monthMap[month],
+            monthS: Constants.MonthMap[month],
             day: dayOfMonth - iter,
-            dayS: daysMap[weirdWeekDayIndex]
+            dayS: Constants.DaysMap[weirdWeekDayIndex]
         });
         iter++;
     }
@@ -70,9 +68,9 @@ export const getCalendarHistory = (lastDay: Date, weeksBack: number): HistoryThi
             history.push({
                 year: year,
                 month: month,
-                monthS: monthMap[month],
+                monthS: Constants.MonthMap[month],
                 day: day + dayOffset,
-                dayS: daysMap[dayOfWeek]
+                dayS: Constants.DaysMap[dayOfWeek]
             });
         }
     }
@@ -152,7 +150,7 @@ const calendarControl = (
                                     marginLeft: 10,
                                     fontWeight: 'bold'
                                 }}>
-                                    {daysMap[keyY - 1].slice(0, 3).toUpperCase()}
+                                    {Constants.DaysMap[keyY - 1].slice(0, 3).toUpperCase()}
                                 </div>
                             </th>
                         </tr>
