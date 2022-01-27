@@ -8,6 +8,8 @@ namespace zeno_habit_api_core.Validators
 {
     public class HabitValidator : EntityValidator<Habit>
     {
+        public HabitValidator(IEntityService<Habit> entityService) : base(entityService) { }
+
         public override async Task<IList<EntityValidation>> Validate(Habit entity)
         {
             var errors = new List<EntityValidation>();

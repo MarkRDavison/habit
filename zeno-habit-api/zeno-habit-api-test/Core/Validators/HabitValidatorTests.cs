@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,8 +12,13 @@ namespace zeno_habit_api_test.Core.Validators
     [TestClass]
     public class HabitValidatorTests
     {
-        private readonly HabitValidator validator = new HabitValidator();
+        private readonly Mock<IEntityService<Habit>> entityServiceMock = new(MockBehavior.Strict);
+        private readonly HabitValidator validator;
 
+        public HabitValidatorTests()
+        {
+            validator = new HabitValidator(entityServiceMock.Object);
+        }
         internal Habit GenerateValidHabit()
         {
             return new Habit {

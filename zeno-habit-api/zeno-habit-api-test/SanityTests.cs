@@ -20,12 +20,12 @@ namespace zeno_habit_api_test
                 Question = $"{RandomString(15)}?"
             };
         }
-        internal Occurence GenerateValidOccurence(Habit habit)
+        internal Occurence GenerateValidOccurence(Habit habit, DateTime date)
         {
             return new Occurence
             {
                 HabitId = habit.Id,
-                OccurenceDate = DateTime.Today
+                OccurenceDate = date
             };
         }
 
@@ -99,7 +99,7 @@ namespace zeno_habit_api_test
         public async Task CreateOccurenceWorks()
         {
             var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
-            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today));
 
             Assert.AreNotEqual(Guid.Empty, occurence.Id);
             Assert.AreEqual(Sub.ToString(), occurence.CreatedByUserId);
@@ -107,10 +107,20 @@ namespace zeno_habit_api_test
         }
 
         [TestMethod]
+        public async Task CreateDuplicateOccurenceWorks()
+        {
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today));
+            var response = await PostAsync("/api/occurence", GenerateValidOccurence(habit, DateTime.Today));
+
+            Assert.IsFalse(response.IsSuccessStatusCode);
+        }
+
+        [TestMethod]
         public async Task GetOccurenceWorks()
         {
             var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
-            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today));
 
             var occurenceFetched = await GetAsync<Occurence>($"/api/occurence/{occurence.Id}");
 
@@ -121,10 +131,10 @@ namespace zeno_habit_api_test
         public async Task GetOccurencesWorks()
         {
             var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
-            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today.AddDays(-1)));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today.AddDays(-2)));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today.AddDays(-3)));
+            await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today.AddDays(-4)));
 
             var occurences = await GetMultipleAsync<Occurence>("/api/occurence");
 
