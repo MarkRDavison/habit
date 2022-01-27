@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using zeno_habit_api_core.Validators;
@@ -11,7 +13,14 @@ namespace zeno_habit_api_test.Core.Validators
     [TestClass]
     public class OccurenceValidatorTests
     {
-        private readonly OccurenceValidator validator = new OccurenceValidator();
+        private readonly Mock<IEntityService<Occurence>> occurenceEntityServiceMock = new(MockBehavior.Strict);
+        private readonly OccurenceValidator validator;
+
+        public OccurenceValidatorTests()
+        {
+            validator = new OccurenceValidator(occurenceEntityServiceMock.Object);
+            occurenceEntityServiceMock.Setup(_ => _.Entities).Returns(new List<Occurence>().AsQueryable());
+        }
 
         internal Occurence GenerateValidOccurence(Guid habitId)
         {
@@ -129,6 +138,58 @@ namespace zeno_habit_api_test.Core.Validators
             var errors = await validator.Validate(occurence);
 
             Assert.AreEqual(0, errors.Count);
+        }
+
+        [TestMethod]
+        public async Task ValidateCollidingOccurenceDatesForDifferentHabitPasses()
+        {
+            var occurence1 = GenerateValidOccurence(Guid.NewGuid());
+            var occurence2 = GenerateValidOccurence(Guid.NewGuid());
+
+            occurenceEntityServiceMock.Setup(_ => _.Entities).Returns(new List<Occurence> { occurence1 }.AsQueryable());
+
+            var errors = await validator.Validate(occurence2);
+
+            Assert.AreEqual(0, errors.Count);
+        }
+
+        [TestMethod]
+        public async Task ValidateCollidingOccurenceDatesForSameHabitFails()
+        {
+            var habitId = Guid.NewGuid();
+            var occurence1 = GenerateValidOccurence(habitId);
+            var occurence2 = GenerateValidOccurence(habitId);
+
+            occurenceEntityServiceMock.Setup(_ => _.Entities).Returns(new List<Occurence> { occurence1 }.AsQueryable());
+
+            var errors = await validator.Validate(occurence2);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual(EntityValidations.Duplicated, errors.First().Code);
+            Assert.IsTrue(errors.First().Message.Contains(nameof(Occurence.OccurenceDate)));
+        }
+
+        public static IEnumerable<object[]> DuplicateOccurenceDatePredicate_WorksData()
+        {
+            var occurence = new Occurence
+            {
+                HabitId = Guid.NewGuid(),
+                OccurenceDate = new DateTime(2022, 1, 27)
+            };
+            yield return new object[] { new Occurence { HabitId = Guid.NewGuid(), OccurenceDate = occurence.OccurenceDate.AddDays(+1) }, occurence, false };
+            yield return new object[] { new Occurence { HabitId = Guid.NewGuid(), OccurenceDate = occurence.OccurenceDate.AddDays(-1) }, occurence, false };
+            yield return new object[] { new Occurence { HabitId = Guid.NewGuid(), OccurenceDate = occurence.OccurenceDate }, occurence, false };
+            yield return new object[] { new Occurence { HabitId = occurence.HabitId, OccurenceDate = occurence.OccurenceDate }, occurence, true };
+            yield return new object[] { new Occurence { HabitId = occurence.HabitId, OccurenceDate = occurence.OccurenceDate.AddDays(+1) }, occurence, false };
+            yield return new object[] { new Occurence { HabitId = occurence.HabitId, OccurenceDate = occurence.OccurenceDate.AddDays(-1) }, occurence, false };
+        }
+
+        [DataTestMethod]
+        [DynamicData(nameof(DuplicateOccurenceDatePredicate_WorksData), DynamicDataSourceType.Method)]
+        public void DuplicateOccurenceDatePredicate_Works(Occurence newOccurence, Occurence existingOccurence, bool expected)
+        {
+            var func = OccurenceValidator.DuplicateOccurenceDatePredicate(newOccurence);
+            Assert.AreEqual(expected, func(existingOccurence));
         }
     }
 }

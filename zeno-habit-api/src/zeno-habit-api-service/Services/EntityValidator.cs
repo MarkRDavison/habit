@@ -7,6 +7,13 @@ namespace zeno_habit_api_service.Services
     public abstract class EntityValidator<T> : IEntityValidator<T> where T : class, IEntity
     {
 
+        private readonly IEntityService<T> entityService;
+
+        public EntityValidator(IEntityService<T> entityService)
+        {
+            this.entityService = entityService ?? throw new NullReferenceException(nameof(entityService));
+        }
+
         public abstract Task<IList<EntityValidation>> Validate(T entity);
         private static string GetMemberName(Expression expression)
         {
@@ -109,6 +116,11 @@ namespace zeno_habit_api_service.Services
             }
 
             return true;
+        }
+
+        protected bool ValidateEntityDoesNotExist(Func<T, bool> predicate)
+        {
+            return !entityService.Entities.Where(predicate).Any();
         }
 
         protected bool IsNew(T entity)

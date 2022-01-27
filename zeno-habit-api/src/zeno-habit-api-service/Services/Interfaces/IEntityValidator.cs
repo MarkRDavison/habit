@@ -6,6 +6,7 @@ namespace zeno_habit_api_service.Services.Interfaces
     {
         public const string MissingRequired = "MISSING_REQ";
         public const string InvalidLength = "INVALID_LENGTH";
+        public const string Duplicated = "DUPLICATED";
     }
     public struct EntityValidation
     {
