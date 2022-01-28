@@ -22,8 +22,6 @@ configure tags:
     when: always
   script:
     - pip install requests
-    - cat determinetagfrompath.py
-    - cat determinetagpresent.py
     - WEB_HASH=$(python3 determinetagfrompath.py --modulepath ./zeno-habit-web/)
     - BFF_HASH=$(python3 determinetagfrompath.py --modulepath ./zeno-habit-bff/)
     - API_HASH=$(python3 determinetagfrompath.py --modulepath ./zeno-habit-api/)
@@ -114,7 +112,11 @@ build api:
   script:
     - cd zeno-habit-api
     - dotnet restore
-    - dotnet test --test-adapter-path:. --collect:"XPlat Code Coverage" --results-directory:"artifacts" --logger:"junit;LogFilePath=..\artifacts\{assembly}-test-result.xml;MethodFormat=Class;FailureBodyFormat=Verbose"
+    - dotnet test --collect:"XPlat Code Coverage" --results-directory:"artifacts" -l:"trx;LogFileName=test-result.trx"
+    - dotnet tool install -g trx2junit
+    - export PATH="$PATH:/root/.dotnet/tools"
+    - trx2junit ./artifacts/test-result.trx --output ./artifacts
+
   artifacts:
     when: always
     reports:
