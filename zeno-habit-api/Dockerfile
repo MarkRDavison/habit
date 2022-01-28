@@ -8,7 +8,9 @@ RUN dotnet test
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+
 WORKDIR /app
+
 COPY --from=BUILD /app/out .
 
 ENTRYPOINT ["dotnet", "zeno-habit-api.dll"]

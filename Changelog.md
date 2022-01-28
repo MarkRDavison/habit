@@ -1,5 +1,11 @@
 # Changelog
 
+## 28/01/2022
+-   Fix junit test results not being generated for API
+
+## 27/01/2022
+-   Add validation to ensure occurences for the same habit cannot be on the same date
+
 ## 26/01/2022
 -   Added basic implementation of occurence display to the main home page
 -   Added simple method of recording occurences by clicking non complete occurences
