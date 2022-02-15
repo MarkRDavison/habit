@@ -8,4 +8,6 @@ RUN npm ci
 
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
+# TODO 
+
 CMD ["npm", "run", "test:e2ehlk8s"]

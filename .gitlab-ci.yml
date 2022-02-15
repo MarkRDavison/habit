@@ -261,6 +261,9 @@ end to end tests:
     - job: "publish api"
       optional: true
       artifacts: true
+    - job: "configure tags"
+      optional: false
+      artifacts: true
   artifacts:
     expire_in: "1h"
   rules:
