@@ -22,4 +22,6 @@ COPY --from=BUILD_IMAGE /usr/src/app/package.json .
 COPY --from=BUILD_IMAGE /usr/src/app/server.mjs .
 COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
 
+# TODO 
+
 CMD ["npm", "run", "serve:served"]

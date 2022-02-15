@@ -18,4 +18,6 @@ COPY --from=BUILD /app/dist ./dist
 COPY --from=BUILD /app/package.json .
 COPY --from=BUILD /app/node_modules ./node_modules
 
+# TODO 
+
 CMD ["npm", "run", "start"]
