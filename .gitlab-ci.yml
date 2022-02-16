@@ -295,10 +295,10 @@ end to end tests:
     - echo $BFF_IMAGE_TAG
     - echo $API_IMAGE_TAG
     - echo $E2E_IMAGE_TAG
-    - if [ "$WEB_IMAGE_TAG" == '' ]; then $API_IMAGE_TAG='latest'; fi
-    - if [ "$BFF_IMAGE_TAG" == '' ]; then $API_IMAGE_TAG='latest'; fi
-    - if [ "$API_IMAGE_TAG" == '' ]; then $API_IMAGE_TAG='latest'; fi
-    - if [ "$E2E_IMAGE_TAG" == '' ]; then $API_IMAGE_TAG='latest'; fi
+    - if [ "$WEB_IMAGE_TAG" == '' ]; then WEB_IMAGE_TAG='latest'; fi
+    - if [ "$BFF_IMAGE_TAG" == '' ]; then BFF_IMAGE_TAG='latest'; fi
+    - if [ "$API_IMAGE_TAG" == '' ]; then API_IMAGE_TAG='latest'; fi
+    - if [ "$E2E_IMAGE_TAG" == '' ]; then E2E_IMAGE_TAG='latest'; fi
     - echo $WEB_IMAGE_TAG
     - echo $BFF_IMAGE_TAG
     - echo $API_IMAGE_TAG
