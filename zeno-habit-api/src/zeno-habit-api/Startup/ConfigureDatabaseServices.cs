@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ namespace zeno_habit_api
             {
                 var appSettings = p.GetRequiredService<IOptions<AppSettings>>();
                 var o = new DbContextOptionsBuilder<HabitDbContext>();
+                System.Console.WriteLine(JsonSerializer.Serialize(appSettings.Value));
                 switch (appSettings.Value.DATABASE_TYPE)
                 {
                     case HabitDbContext.SQLITE:
