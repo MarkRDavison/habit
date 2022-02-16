@@ -21,8 +21,8 @@ api: {
     ],
     public: {
       ZENO_HABIT__DATABASE_TYPE: 'postgres',
-      ZENO_HABIT_DAEMON__DATABASE_PORT: '5432',
-      ZENO_HABIT_DAEMON__DATABASE_HOST: 'postgres.markdavison.kiwi',
+      ZENO_HABIT__DATABASE_PORT: '5432',
+      ZENO_HABIT__DATABASE_HOST: 'postgres.markdavison.kiwi',
       ZENO_HABIT__USER: 'Data Source=localdatabase.db',
       ZENO_HABIT__NAME: 'Data Source=localdatabase.db',
       ZENO_HABIT__URL: 'http://localhost:50000',
