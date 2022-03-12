@@ -10,18 +10,16 @@ RUN npm run build
 RUN npm run test
 RUN npm run lint
 
-# remove development dependencies
-RUN npm prune --production
+FROM nginx:alpine
 
-FROM node:alpine
+RUN rm -rf /usr/share/nginx/html/*
 
-WORKDIR /usr/src/app
+COPY --from=BUILD_IMAGE /usr/src/app/dist/* /usr/share/nginx/html/
+COPY --from=BUILD_IMAGE /usr/src/app/entry.sh /usr/share/nginx/html/
+COPY --from=BUILD_IMAGE /usr/src/app/nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=BUILD_IMAGE /usr/src/app/dist ./dist
-COPY --from=BUILD_IMAGE /usr/src/app/package.json .
-COPY --from=BUILD_IMAGE /usr/src/app/server.mjs .
-COPY --from=BUILD_IMAGE /usr/src/app/node_modules ./node_modules
+RUN chmod +x /usr/share/nginx/html/entry.sh
 
-# TODO 
+WORKDIR /usr/share/nginx/html
 
-CMD ["npm", "run", "serve:served"]
+CMD ["./entry.sh"]
