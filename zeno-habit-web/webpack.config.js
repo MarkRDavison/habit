@@ -3,15 +3,14 @@ const cssnano = require('cssnano');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require("path");
 
-const IS_DEV = true;
+const isProduction = process.argv[process.argv.indexOf('--mode') + 1] === 'production';
 
 const nodeModulesPath = path.resolve(__dirname, 'node_modules');
-const targets = IS_DEV ? { chrome: '79', firefox: '72' } : '> 0.25%, not dead';
+const targets = isProduction ?  '> 0.25%, not dead' : { chrome: '79', firefox: '72' };
 
 module.exports = {
-    mode: IS_DEV ? 'development' : 'production',
-    devtool: IS_DEV ? 'inline-source-map' : false,
-    devtool: "source-map",
+    mode: isProduction ? 'production' : 'development',
+    devtool: isProduction ? false : 'inline-source-map',
     entry: ['./src/index.tsx'],
     devServer: {
       historyApiFallback: true,
@@ -53,14 +52,14 @@ module.exports = {
                         options: {
                             modules: true,
                             localsConvention: 'camelCase',
-                            sourceMap: IS_DEV,
+                            sourceMap: !isProduction,
                         },
                     },
                     {
                         loader: 'postcss-loader',
                         options: {
-                            sourceMap: IS_DEV,
-                            plugins: IS_DEV ? [cssnano()] : [],
+                            sourceMap: !isProduction,
+                            plugins: isProduction ? [] : [cssnano()],
                         },
                     },
                 ],
