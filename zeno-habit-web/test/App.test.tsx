@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import App from '../src/App';
+import App from '@/App';
 import { Provider } from 'react-redux';
 import createHabitStore from '../src/store/store';
 import { MemoryRouter } from 'react-router';
