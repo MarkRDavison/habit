@@ -1,5 +1,6 @@
 variables:
   GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
   APP_NAME: zeno-habit
   IMAGE_TAG: $CI_COMMIT_SHA
 
