@@ -14,7 +14,7 @@ FROM nginx:alpine
 
 RUN rm -rf /usr/share/nginx/html/*
 
-COPY --from=BUILD_IMAGE /usr/src/app/build/* /usr/share/nginx/html/
+COPY --from=BUILD_IMAGE /usr/src/app/dist/* /usr/share/nginx/html/
 COPY --from=BUILD_IMAGE /usr/src/app/entry.sh /usr/share/nginx/html/
 COPY --from=BUILD_IMAGE /usr/src/app/nginx.conf /etc/nginx/nginx.conf
 
