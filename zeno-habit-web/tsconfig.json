@@ -5,10 +5,19 @@
     "outDir": "build",
     "rootDir": ".",
     "strict": true,
+    "baseUrl": "./",
     "esModuleInterop": true,
     "jsx": "react",
     "forceConsistentCasingInFileNames": true,
-    "allowJs": false
+    "allowJs": false,
+    "paths": {
+        "@/*": [
+            "src/*"
+        ],
+        "@images/*": [
+            "public/images/*"
+        ]
+    },
   },
   "include": [
     "src",

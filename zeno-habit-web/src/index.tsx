@@ -3,7 +3,7 @@ import axios from 'axios';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import App from './App';
+import App from '@/App';
 import createHabitStore from './store/store';
 import config from './util/config';
 

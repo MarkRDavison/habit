@@ -306,6 +306,7 @@ end to end tests:
     - echo $E2E_IMAGE_TAG
     - envsubst < ./zeno-habit-e2e/e2e-dep.yaml | tee ./zeno-habit-e2e/dep-subst.yaml
     - kubectl delete namespace ${APP_NAME}-dev --ignore-not-found=true --kubeconfig "$KUBE_CONFIG"
+    - sleep 15s
     - kubectl create namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - kubectl apply -f ./zeno-habit-e2e/zeno-habit-dev-secret.yaml -n ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"
     - helm upgrade ${APP_NAME} ./charts --install --atomic --values ./charts/dev-values.yaml --set api.tag="$API_IMAGE_TAG" --set bff.tag="$BFF_IMAGE_TAG" --set web.tag="$WEB_IMAGE_TAG" --namespace ${APP_NAME}-dev --kubeconfig "$KUBE_CONFIG"

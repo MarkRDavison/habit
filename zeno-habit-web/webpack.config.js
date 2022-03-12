@@ -71,7 +71,11 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.ts', '.js', '.json', ".tsx"]
+        extensions: ['.ts', '.js', '.json', ".tsx"],
+        alias: {
+            "@": path.resolve(__dirname, "src"),
+            "@images": path.resolve(__dirname, "public/images"),
+        }
     },
     output: {
         filename: "bundle.js",
