@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DispatchType, RootState } from '../store/store';
 import { connect } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router';
@@ -9,6 +9,7 @@ import HabitHistorySection from './habitSections/HabitHistorySection';
 import HabitCalendarSection from './habitSections/HabitCalendarSection';
 import HabitBestStreaksSection from './habitSections/HabitBestStreaksSection';
 import HabitFrequencySection from './habitSections/HabitFrequencySection';
+import AddOccurenceDialog from './AddOccurenceDialog';
 
 interface StateProps {
     habit: Habit | undefined
@@ -27,6 +28,7 @@ type OwnRouterProps = OwnProps & WithRouterProps;
 type Props = StateProps & DispatchProps & OwnRouterProps;
 
 const _HabitPage: React.FC<Props> = (props: Props) => {
+    const [addModalOpen, setAddModalOpen] = useState(false);
 
     const {
         returnHome,
@@ -37,6 +39,9 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
         return null;
     }
 
+    const openModal = (): void => setAddModalOpen(true);
+    const closeModal = (): void => setAddModalOpen(false);
+
     const colour = '#4dd0e1';
 
     return (
@@ -44,6 +49,9 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
             <button
                 data-testid='HabitPage_ReturnButton'
                 onClick={returnHome}>{'<--'}</button>
+            <button
+                data-testid='HabitPage_AddOccurenceButton'
+                onClick={openModal}>{'+'}</button>
             <h1>{habit.name}</h1>
             <h3>{habit.question}</h3>
             <HabitOverviewSection
@@ -60,6 +68,10 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
                 today={new Date(2022, 0, 19)} />
             <HabitBestStreaksSection />
             <HabitFrequencySection />
+            <AddOccurenceDialog
+                habit={habit}
+                open={addModalOpen}
+                onClose={closeModal} />
         </div>
     );
 };
