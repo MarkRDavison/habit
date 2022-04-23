@@ -6,11 +6,19 @@ import {
     setHabitsProgressing,
     setHabitsRemoved,
     setHabitFetchError,
-    setHabitsAdded
+    setHabitsAdded,
+    setHabitsUpdated
 } from "../../src/store/habitReducer";
 
 const createHabit = (id: string = ''): Habit => {
-    return { id: id, createdByUserId: '', name: '', createdDate: '', question: '' };
+    return { 
+        id: id, 
+        createdByUserId: '', 
+        name: '', 
+        createdDate: '', 
+        question: '',
+        archived: false
+    };
 }
 
 describe('habitReducer', () => {
@@ -68,6 +76,25 @@ describe('habitReducer', () => {
         expect(state.error).toBeUndefined();
         expect(state.progressing).toBeFalsy();
         expect(state.habits).toHaveLength(1);
+    });
+
+    test('updating habits replaces them in the state', () => {
+        const initialState: HabitState = {
+            error: undefined,
+            progressing: false,
+            habits: [
+                createHabit('1'), createHabit('2'), createHabit('3')
+            ]
+        };
+
+        const state = habitReducer(initialState, setHabitsUpdated([
+            initialState.habits[0],
+            initialState.habits[2]
+        ]));
+
+        expect(state.error).toBeUndefined();
+        expect(state.progressing).toBeFalsy();
+        expect(state.habits).toHaveLength(3);
     });
 
     test('setting habit fetch error sets error and clears the fetching flag', () => {

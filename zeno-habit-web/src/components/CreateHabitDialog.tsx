@@ -54,7 +54,8 @@ const _CreateHabitDialog: React.FC<Props> = (props: Props) => {
             createdDate: `${new Date().getUTCDate()}`,
             createdByUserId: user.sub,
             name: values.name,
-            question: values.question
+            question: values.question,
+            archived: false
         });
         return {
             success: true,

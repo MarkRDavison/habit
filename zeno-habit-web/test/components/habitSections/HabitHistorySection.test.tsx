@@ -29,7 +29,8 @@ describe('HabitHistorySection', () => {
         name: 'Habit Number 1',
         createdDate: 'today',
         createdByUserId: 'me',
-        question: 'habit 1'
+        question: 'habit 1',
+        archived: false
     };
     let localStore: Store<RootState, AnyAction>;
 

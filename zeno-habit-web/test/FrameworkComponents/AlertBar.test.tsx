@@ -1,11 +1,12 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import AlertBar from '../../src/FrameworkComponents/AlertBar';
 import { RootState } from '../../src/store/store';
 import { Alert, clearAlert, setErrorAlert, setInfoAlert, setSuccessAlert, setWarningAlert } from '../../src/store/alertReducer';
 import { AnyAction, Store } from 'redux';
 import createHabitStore from '../../src/store/store';
+import userEvent from '@testing-library/user-event';
 
 describe('AlertBar', () => {
     let localStore: Store<RootState, AnyAction>;
@@ -94,7 +95,7 @@ describe('AlertBar', () => {
         const alertBarDismissButton = queryByTestId('AlertBarDismissButton');
         expect(alertBarDismissButton).toBeValid();
 
-        await fireEvent.click(alertBarDismissButton!);
+        await userEvent.click(alertBarDismissButton!);
 
         const rootState: RootState = localStore.getState();
         expect(rootState.alertState.message).toBeUndefined();

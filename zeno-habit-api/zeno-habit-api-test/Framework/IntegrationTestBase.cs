@@ -107,6 +107,19 @@ namespace zeno_habit_api_test.Framework
             return await ReadAsAsync<T>(response);
         }
 
+        protected async Task<bool> DeleteAsync<T>(string uri, IEnumerable<Claim> claims = null)
+        {
+            var response = await CallAsync(HttpMethod.Delete, uri, null, claims);
+
+            return response.IsSuccessStatusCode;
+        }
+        protected async Task<T> PatchAsync<T>(string uri, T data, IEnumerable<Claim> claims = null)
+        {
+            var response = await CallAsync(HttpMethod.Patch, uri, data, claims);
+            response.EnsureSuccessStatusCode();
+            return await ReadAsAsync<T>(response);
+        }
+
         protected TorrentWebApplicationFactory Factory { get; }
         protected HttpClient Client { get; }
         protected Guid Sub { get; } = Guid.NewGuid();

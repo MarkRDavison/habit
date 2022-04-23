@@ -3,7 +3,8 @@ export interface Habit {
     createdByUserId: string,
     name: string,
     question: string,
-    createdDate: string
+    createdDate: string,
+    archived: boolean
 }
 export interface HabitCreationProps {
     id: string | undefined,

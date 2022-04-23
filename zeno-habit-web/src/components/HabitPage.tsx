@@ -10,12 +10,15 @@ import HabitCalendarSection from './habitSections/HabitCalendarSection';
 import HabitBestStreaksSection from './habitSections/HabitBestStreaksSection';
 import HabitFrequencySection from './habitSections/HabitFrequencySection';
 import AddOccurenceDialog from './AddOccurenceDialog';
+import habitService from '@/services/habitService';
+import { setHabitsUpdated } from '@/store/habitReducer';
 
 interface StateProps {
     habit: Habit | undefined
 }
 interface DispatchProps {
     returnHome: () => void
+    archiveHabit: (habit: Habit) => Promise<void>
 }
 interface OwnProps {
 
@@ -28,10 +31,11 @@ type OwnRouterProps = OwnProps & WithRouterProps;
 type Props = StateProps & DispatchProps & OwnRouterProps;
 
 const _HabitPage: React.FC<Props> = (props: Props) => {
-    const [addModalOpen, setAddModalOpen] = useState(false);
+    const [addOccurenceModalOpen, setOccurenceAddModalOpen] = useState(false);
 
     const {
         returnHome,
+        archiveHabit,
         habit
     } = props;
 
@@ -39,8 +43,8 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
         return null;
     }
 
-    const openModal = (): void => setAddModalOpen(true);
-    const closeModal = (): void => setAddModalOpen(false);
+    const openModal = (): void => setOccurenceAddModalOpen(true);
+    const closeModal = (): void => setOccurenceAddModalOpen(false);
 
     const colour = '#4dd0e1';
 
@@ -52,6 +56,9 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
             <button
                 data-testid='HabitPage_AddOccurenceButton'
                 onClick={openModal}>{'+'}</button>
+            <button
+                data-testid='HabitPage_ArchiveOccurenceButton'
+                onClick={async (): Promise<void> => await archiveHabit(habit)}>{'Archive'}</button>
             <h1>{habit.name}</h1>
             <h3>{habit.question}</h3>
             <HabitOverviewSection
@@ -70,7 +77,7 @@ const _HabitPage: React.FC<Props> = (props: Props) => {
             <HabitFrequencySection />
             <AddOccurenceDialog
                 habit={habit}
-                open={addModalOpen}
+                open={addOccurenceModalOpen}
                 onClose={closeModal} />
         </div>
     );
@@ -85,7 +92,14 @@ const mapStateToProps = (state: RootState, props: OwnRouterProps): StateProps =>
 
 const mapDispatchToProps = (dispatch: DispatchType, props: OwnRouterProps): DispatchProps => {
     return {
-        returnHome: (): void => props.history.push('/')
+        returnHome: (): void => props.history.push('/'),
+        archiveHabit: async (habit: Habit): Promise<void>  => {
+            const patched = await habitService.patchHabit({
+                ...habit,
+                archived: true
+            });
+            dispatch(setHabitsUpdated([patched]));
+        }
     };
 }
 

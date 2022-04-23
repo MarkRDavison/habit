@@ -10,6 +10,7 @@ import createHabitStore from '../../src/store/store';
 import { Router } from 'react-router';
 import { createBrowserHistory } from 'history'
 import { Habit } from '../../src/models/Habit';
+import { act } from 'react-dom/test-utils';
 
 jest.mock('../../src/services/habitService', () => {
     return {
@@ -98,7 +99,7 @@ describe('CreateHabitDialog', () => {
         var history = createBrowserHistory();
         renderCreateHabitDialog(true, authProps, localStore, history);
 
-        userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-name')!, 'the name');
+        act(() => userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-name')!, 'the name'));
 
         let submit = screen.queryByTestId<HTMLInputElement>('zeno-form-input-submit');
         expect(submit).toBeValid();
@@ -112,14 +113,16 @@ describe('CreateHabitDialog', () => {
         const nameData = 'the name';
         const questionData = 'the question';
 
-        userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-name')!, nameData);
-        userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-question')!, questionData);
+        act(() => userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-name')!, nameData));
+        act(() => userEvent.type(screen.queryByTestId<HTMLInputElement>('zeno-form-input-question')!, questionData));
 
         const submit = screen.queryByTestId<HTMLInputElement>('zeno-form-input-submit');
         expect(submit).toBeValid();
         expect(submit).toBeEnabled();
 
-        userEvent.click(submit!);
+        act(() => {
+            userEvent.click(submit!);
+        });
         expect(submit).toBeDisabled();
 
         await waitFor(() => expect(submit).toBeEnabled(), { timeout: 500 });

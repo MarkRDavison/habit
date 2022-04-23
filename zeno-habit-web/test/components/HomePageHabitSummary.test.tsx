@@ -1,5 +1,5 @@
 import React from 'react';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import HomePageHabitSummary from '../../src/components/HomePageHabitSummary';
 import { Habit } from '../../src/models/Habit';
 import { Provider } from 'react-redux';
@@ -10,6 +10,7 @@ import { setHabitsFetched } from '../../src/store/habitReducer';
 import { MemoryRouter } from 'react-router';
 import { Occurence, OccurenceCreationProps } from '../../src/models/Occurence';
 import { setOccurencesFetched } from '../../src/store/occurenceReducer';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../src/services/occurenceService', () => {
     return {
@@ -35,7 +36,8 @@ describe('HomePageHabitSummary', () => {
         name: 'Habit Number 1',
         createdDate: 'a week ago',
         createdByUserId: userId,
-        question: '1?'
+        question: '1?',
+        archived: false
     };
     const occurences: Occurence[] = [
         {
@@ -43,21 +45,21 @@ describe('HomePageHabitSummary', () => {
             createdByUserId: userId,
             createdDate: 'yesterday',
             habitId: habit.id,
-            occurenceDate: addDays(now, -1)
+            occurenceDate: addDays(now, -2)
         },
         {
             id: '2',
             createdByUserId: userId,
             createdDate: 'yesterday',
             habitId: habit.id,
-            occurenceDate: addDays(now, -2)
+            occurenceDate: addDays(now, -3)
         },
         {
             id: '1',
             createdByUserId: userId,
             createdDate: 'yesterday',
             habitId: habit.id,
-            occurenceDate: addDays(now, -3)
+            occurenceDate: addDays(now, -4)
         }
     ];
     let localStore: Store<RootState, AnyAction>;
@@ -109,7 +111,7 @@ describe('HomePageHabitSummary', () => {
         expect(habitSummary).toBeValid();
 
         await act(async () => {
-            fireEvent.click(habitSummary!);
+            userEvent.click(habitSummary!);
         });
     });
 
@@ -126,7 +128,7 @@ describe('HomePageHabitSummary', () => {
         expect(occurence).toBeValid();
         
         await act(async () => {
-            fireEvent.click(occurence!);
+            userEvent.click(occurence!);
         });
     });
 
@@ -143,7 +145,7 @@ describe('HomePageHabitSummary', () => {
         expect(occurence).toBeValid();
         
         await act(async () => {
-            fireEvent.click(occurence!);
+            await userEvent.click(occurence!);
         });
 
         expect(localStore.getState().occurenceState.occurences).toHaveLength(occurences.length + 1);

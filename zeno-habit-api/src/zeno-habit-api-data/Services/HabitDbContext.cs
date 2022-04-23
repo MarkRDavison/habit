@@ -41,6 +41,14 @@ namespace zeno_habit_api_data.Services
                 .Entity<Habit>()
                 .Property(_ => _.CreatedDate)
                 .IsRequired();
+            modelBuilder
+                .Entity<Habit>()
+                .Property(_ => _.CreatedDate)
+                .IsRequired();
+            modelBuilder
+                .Entity<Habit>()
+                .Property(_ => _.Archived)
+                .HasDefaultValue(false);
             #endregion
             #region Occurence
             modelBuilder
