@@ -20,5 +20,25 @@ namespace zeno_habit_api.Controllers
         {
         }
 
+        protected override void PatchUpdate(Habit persisted, Habit patched)
+        {
+            if (patched.Archived != persisted.Archived)
+            {
+                persisted.Archived = patched.Archived;
+            }
+
+            if (!string.IsNullOrEmpty(patched.Name) &&
+                patched.Name != persisted.Name)
+            {
+                persisted.Name = patched.Name;
+            }
+
+            if (!string.IsNullOrEmpty(patched.Question) &&
+                patched.Question != persisted.Question)
+            {
+                persisted.Question = patched.Question;
+            }
+        }
+
     }
 }

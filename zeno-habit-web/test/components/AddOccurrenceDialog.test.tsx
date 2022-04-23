@@ -1,5 +1,5 @@
 import { Habit } from "@/models/Habit";
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { setHabitsFetched } from "@/store/habitReducer";
 import createHabitStore, { RootState } from "@/store/store";
 import { createBrowserHistory } from 'history'
@@ -9,9 +9,9 @@ import React from "react";
 import HabitPage from "@/components/HabitPage";
 import { Provider } from "react-redux";
 import { Router, Route } from "react-router";
-import userEvent from "@testing-library/user-event";
 import occurenceService, { OccurenceService } from "@/services/occurenceService";
 import { act } from "react-dom/test-utils";
+import userEvent from "@testing-library/user-event";
 
 jest.mock('@mark.davison/zeno-common', () => {
     return {
@@ -37,7 +37,8 @@ describe('AddOccurenceDialog', () => {
         name: 'Habit Number 1',
         createdDate: 'today',
         createdByUserId: 'me',
-        question: 'habit 1'
+        question: 'habit 1',
+        archived: false
     };
 
     let localStore: Store<RootState, AnyAction>;
@@ -62,7 +63,7 @@ describe('AddOccurenceDialog', () => {
         const habitPage_AddOccurenceButton = screen.queryByTestId('HabitPage_AddOccurenceButton');
         expect(habitPage_AddOccurenceButton).toBeValid();
 
-        await fireEvent.click(habitPage_AddOccurenceButton!);
+        await userEvent.click(habitPage_AddOccurenceButton!);
     });
     
     const authProps = {
@@ -100,7 +101,7 @@ describe('AddOccurenceDialog', () => {
         const addEntryDialog_DateInput = screen.queryByTestId<HTMLInputElement>('AddEntryDialog_DateInput');
         expect(addEntryDialog_DateInput).toBeValid(); 
 
-        userEvent.type(addEntryDialog_DateInput!, '2020-01-01');
+        act(() => userEvent.type(addEntryDialog_DateInput!, '2020-01-01'));
 
         const addEntryDialog_Submit = screen.queryByTestId('AddEntryDialog_Submit');
         expect(addEntryDialog_Submit).toBeEnabled();
@@ -110,7 +111,7 @@ describe('AddOccurenceDialog', () => {
         const addEntryDialog_DateInput = screen.queryByTestId<HTMLInputElement>('AddEntryDialog_DateInput');
         expect(addEntryDialog_DateInput).toBeValid(); 
 
-        userEvent.type(addEntryDialog_DateInput!, '2020-01-01');
+        act(() => userEvent.type(addEntryDialog_DateInput!, '2020-01-01'));
 
         const addEntryDialog_Submit = screen.queryByTestId('AddEntryDialog_Submit');
         expect(addEntryDialog_Submit).toBeEnabled();
@@ -129,7 +130,7 @@ describe('AddOccurenceDialog', () => {
         const addEntryDialog_DateInput = screen.queryByTestId<HTMLInputElement>('AddEntryDialog_DateInput');
         expect(addEntryDialog_DateInput).toBeValid(); 
 
-        userEvent.type(addEntryDialog_DateInput!, '2020-01-01');
+        act(() => userEvent.type(addEntryDialog_DateInput!, '2020-01-01'));
 
         const addEntryDialog_Submit = screen.queryByTestId('AddEntryDialog_Submit');
         expect(addEntryDialog_Submit).toBeEnabled();

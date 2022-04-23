@@ -10,20 +10,31 @@ import createHabitStore from '../../src/store/store';
 import { MemoryRouter } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import { Habit } from '../../src/models/Habit';
+import { act } from 'react-dom/test-utils';
+import { Occurence } from '@/models/Occurence';
 
 const createHabit = (): Habit => {
     return {
-        id: '1',
+        id: `${Math.random()}`,
         name: 'Habit 1',
         createdDate: 'today',
         createdByUserId: '12345',
-        question: '1?'
+        question: '1?',
+        archived: false
     };
 }
 
 jest.mock('../../src/services/habitService', () => {
     return {
         getHabits: async (): Promise<Habit[]> => {
+            return await Promise.resolve([]);
+        }
+    }
+});
+
+jest.mock('../../src/services/occurenceService', () => {
+    return {
+        getOccurencesWithinDateRange: async (habitIds: string[], startDate: Date, endDate: Date): Promise<Occurence[]> => {
             return await Promise.resolve([]);
         }
     }
@@ -112,10 +123,36 @@ describe('Home', () => {
 
         const button = screen.queryByTestId<HTMLButtonElement>('HomePage_AddHabit');
         expect(button).toBeValid();
-        userEvent.click(button!);
+        act(() => userEvent.click(button!));
 
         const createHabitDialog = screen.queryByTestId('CreateHabitDialog');
         expect(createHabitDialog).toBeValid();
+    });
+
+    test('Clicking the switch shows archived habits', async () => {
+        const archivedName = 'I AM ARCHIVED';
+        localStore.dispatch(setHabitsFetched([
+            createHabit(), {
+            ...createHabit(),
+            name: archivedName,
+            archived: true
+        }]));
+        render(
+            <zcc.AuthProvider value={authProps}>
+                <Provider store={localStore}>
+                    <MemoryRouter>
+                        <HomePage />
+                    </MemoryRouter>
+                </Provider>
+            </zcc.AuthProvider>
+        );
+
+        const switchControl = screen.getByRole('checkbox');
+        expect(switchControl).toBeValid();
+        await act(async () => await userEvent.click(switchControl!));
+
+        const archivedHabit = screen.findByText(archivedName);
+        expect(archivedHabit).not.toBeNull();
     });
 
 });

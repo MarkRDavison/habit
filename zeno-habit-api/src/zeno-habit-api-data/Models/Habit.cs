@@ -9,5 +9,6 @@ namespace zeno_habit_api_data.Models
         public string Name { get; set; }
         public string Question { get; set; }
         public DateTime? CreatedDate { get; set; }
+        public bool Archived { get; set; }
     }
 }

@@ -20,7 +20,6 @@ namespace zeno_habit_api
             {
                 var appSettings = p.GetRequiredService<IOptions<AppSettings>>();
                 var o = new DbContextOptionsBuilder<HabitDbContext>();
-                System.Console.WriteLine(JsonSerializer.Serialize(appSettings.Value));
                 switch (appSettings.Value.DATABASE_TYPE)
                 {
                     case HabitDbContext.SQLITE:

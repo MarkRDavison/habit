@@ -140,5 +140,33 @@ namespace zeno_habit_api_test
 
             Assert.AreEqual(4, occurences.Count());
         }
+
+        [TestMethod]
+        public async Task DeleteOccurenceWorks()
+        {
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            var occurence = await PostAsAsyncWithSuccessfulResponse("/api/occurence", GenerateValidOccurence(habit, DateTime.Today));
+
+            Assert.IsTrue(await DeleteAsync<Occurence>($"/api/occurence/{occurence.Id}"));
+        }
+
+        [TestMethod]
+        public async Task DeleteHabitWorks()
+        {
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+
+            Assert.IsTrue(await DeleteAsync<Occurence>($"/api/habit/{habit.Id}"));
+        }
+
+        [TestMethod]
+        public async Task PatchHabitWorks()
+        {
+            var habit = await PostAsAsyncWithSuccessfulResponse("/api/habit", GenerateValidHabit());
+            habit.Name = "PATCHED_NAME";
+
+            var patched = await PatchAsync<Habit>($"/api/habit/{habit.Id}", habit);
+
+            Assert.AreEqual(habit.Name, patched.Name);
+        }
     }
 }

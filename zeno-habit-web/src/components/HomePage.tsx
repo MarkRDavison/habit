@@ -7,7 +7,7 @@ import { HabitState, setHabitsFetched, setHabitsProgressing } from '../store/hab
 import HomePageHabitSummary from './HomePageHabitSummary';
 import CreateHabitDialog from './CreateHabitDialog';
 import habitService from '../services/habitService';
-import { Typography } from '@mui/material';
+import { Switch, Typography } from '@mui/material';
 import { setOccurencesFetched, setOccurencesProgressing } from '../store/occurenceReducer';
 import occurenceService from '../services/occurenceService';
 import Constants from '../models/Helpers';
@@ -25,6 +25,8 @@ interface OwnProps {
 type Props = StateProps & DispatchProps & OwnProps;
 const _HomePage: React.FC<Props> = (props: Props) => {
     const [dialogOpen, setDialogOpen] = React.useState<boolean>(false);
+    const [fetched, setFetched] = React.useState<boolean>(false);
+    const [showArchived, setShowArchived] = React.useState<boolean>(false);
     const {
         user,
         logout
@@ -36,11 +38,11 @@ const _HomePage: React.FC<Props> = (props: Props) => {
 
     /* istanbul ignore next */
     useEffect(() => {
-        // TODO: Need to have some way of saying yes i've fetched and there's nothing!
-        if (!habitState.progressing && habitState.habits.length === 0) {
+        if (!fetched) {
+            setFetched(true);
             fetchHabitsWithNOccurence().then().catch(zc.logger.error)
         }
-    }, [habitState, fetchHabitsWithNOccurence]);
+    }, [fetched, setFetched, habitState, fetchHabitsWithNOccurence]);
 
     /* istanbul ignore next */
     const closeDialog = (): void => setDialogOpen(false);
@@ -66,7 +68,10 @@ const _HomePage: React.FC<Props> = (props: Props) => {
             day: date.getDate()
         });
     }
-
+ 
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setShowArchived(event.target.checked);
+    };
 
     return (
         <div data-testid='HomePage'>
@@ -74,7 +79,9 @@ const _HomePage: React.FC<Props> = (props: Props) => {
             <button data-testid='HomePage_LOGOUT' onClick={logout}>LOGOUT</button>
             <button data-testid='HomePage_AddHabit' onClick={openDialog}>ADD HABIT</button>
             <div>{user.name}</div>
-            <div>There are {habitState.habits.length} habits</div>
+            <Switch data-testid='HomePage_SwitchShowArchived' checked={showArchived} onChange={handleChange} name="checked" />
+            <p>^^ SHOW ARCHIVED</p>
+            <div>There are {habitState.habits.filter(_ => !_.archived || showArchived).length} habits</div>
             <div style={{
                 display: 'flex',
                 flexDirection: 'row-reverse',
@@ -100,7 +107,7 @@ const _HomePage: React.FC<Props> = (props: Props) => {
                 }
             </div>
             {
-                habitState.habits.map(h => (
+                habitState.habits.filter(_ => !_.archived || showArchived).map(h => (
                     <HomePageHabitSummary habitId={h.id} key={h.id} colour={'#CC2244'} />
                 ))
             }

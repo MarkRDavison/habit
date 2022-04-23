@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import HabitPage from '../../src/components/HabitPage';
 import * as zcc from '@mark.davison/zeno-common-client';
 import { Provider } from 'react-redux';
@@ -10,6 +10,15 @@ import { Route, Router } from 'react-router';
 import { Habit } from '../../src/models/Habit';
 import { setHabitsFetched } from '../../src/store/habitReducer';
 import { createBrowserHistory } from 'history'
+import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
+import habitService from '@/services/habitService';
+
+jest.mock('@/services/habitService', () => {
+    return {
+        patchHabit: jest.fn((habit: Habit) => Promise.resolve(habit))
+    }
+});
 
 describe('HabitPage', () => {
     const habit: Habit = {
@@ -17,7 +26,8 @@ describe('HabitPage', () => {
         name: 'Habit Number 1',
         createdDate: 'today',
         createdByUserId: 'me',
-        question: 'habit 1'
+        question: 'habit 1',
+        archived: false
     };
     let localStore: Store<RootState, AnyAction>;
 
@@ -80,7 +90,7 @@ describe('HabitPage', () => {
         const habitPage_ReturnButton = queryByTestId('HabitPage_ReturnButton');
         expect(habitPage_ReturnButton).toBeValid();
 
-        await fireEvent.click(habitPage_ReturnButton!);
+        act(() => userEvent.click(habitPage_ReturnButton!));
 
         expect(history.location.pathname).toBe('/');
     });
@@ -104,7 +114,7 @@ describe('HabitPage', () => {
         expect(habitSummary).toBeNull();
     });
 
-    test('clicking add button opens add occurence dialog', async () => {
+    test('clicking add button opens add occurence dialog', () => {
         var history = createBrowserHistory();
         history.push(`/habit/${habit.id}`);
         const { queryByTestId } = render(
@@ -122,11 +132,34 @@ describe('HabitPage', () => {
         const habitPage_AddOccurenceButton = queryByTestId('HabitPage_AddOccurenceButton');
         expect(habitPage_AddOccurenceButton).toBeValid();
 
-        await fireEvent.click(habitPage_AddOccurenceButton!);
+        act(() => userEvent.click(habitPage_AddOccurenceButton!));
         
         const addEntryDialog_CloseButton = queryByTestId('AddEntryDialog_CloseButton');
         expect(addEntryDialog_CloseButton).toBeValid();
 
-        await fireEvent.click(addEntryDialog_CloseButton!);
+        act(() => userEvent.click(addEntryDialog_CloseButton!));
+    });
+
+    test('clicking archive button archives the habit', async () => {
+        var history = createBrowserHistory();
+        history.push(`/habit/${habit.id}`);
+        const { queryByTestId } = render(
+            <zcc.AuthProvider value={authProps}>
+                <Provider store={localStore}>
+                    <Router history={history}>
+                        <Route path='/habit/:id'>
+                            <HabitPage />
+                        </Route>
+                    </Router>
+                </Provider>
+            </zcc.AuthProvider>
+        );
+
+        const habitPage_ArchiveOccurenceButton = queryByTestId('HabitPage_ArchiveOccurenceButton');
+        expect(habitPage_ArchiveOccurenceButton).toBeValid();
+
+        await act(async () => await userEvent.click(habitPage_ArchiveOccurenceButton!));
+
+        expect(habitService.patchHabit).toBeCalled();
     });
 });
